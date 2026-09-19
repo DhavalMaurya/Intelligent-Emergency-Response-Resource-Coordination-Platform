@@ -1,0 +1,21 @@
+{
+  "name": "ps9-emergency-platform",
+  "version": "1.0.0",
+  "description": "PS-9 Intelligent Emergency Response & Resource Coordination Platform",
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:backend": "npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "seed": "npm --prefix backend run seed"
+  },
+  "keywords": [
+    "emergency-response",
+    "eoc",
+    "command-center",
+    "leaflet",
+    "socketio"
+  ],
+  "author": "",
+  "license": "ISC"
+}
