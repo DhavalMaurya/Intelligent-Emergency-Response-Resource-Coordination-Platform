@@ -1,4 +1,5 @@
 import { IIncident } from '../models/Incident.js';
+import { calculateCosineSimilarity, cosineToSemanticPoints } from './vectorEmbeddingService.js';
 
 export interface CorrelationCandidate {
   rawText: string;
@@ -9,6 +10,7 @@ export interface CorrelationCandidate {
     coordinates?: [number, number]; // [lng, lat]
   };
   timestamp?: Date;
+  candidateEmbedding?: number[];
 }
 
 export type CorrelationMatchType = 'AUTOMATIC_LINK' | 'OPERATOR_REVIEW' | 'DISTINCT';
@@ -36,6 +38,7 @@ export interface CorrelationMatchResult {
     temporalScore: number;
     typeCompatibilityScore: number;
     jaccardTextSimilarityScore: number;
+    embeddingSimilarityScore: number;
   };
   explanation: string[];
 }
@@ -85,8 +88,6 @@ export const tokenizeText = (text: string): Set<string> => {
 
 /**
  * Deterministic Jaccard text similarity coefficient (0.0 to 1.0).
- * Phase 2 uses deterministic Jaccard similarity; semantic embeddings / Gemini-based
- * matching are reserved for Phase 3.
  */
 export const calculateJaccardSimilarity = (textA: string, textB: string): number => {
   const tokensA = tokenizeText(textA);
@@ -107,14 +108,13 @@ export const calculateJaccardSimilarity = (textA: string, textB: string): number
 
 /**
  * Evaluates an incoming report candidate against a list of active master incidents.
- *
- * Correlation Rules:
- * 1. Incoming Report to Existing Master Incident:
- *    - >= 80%: AUTOMATIC_LINK (Report is automatically linked to the master incident)
- *    - 50% - 79%: OPERATOR_REVIEW (Requires dispatcher review in triage queue)
- *    - < 50%: DISTINCT (Separate incident/report)
- * 2. Merging two already-existing incidents:
- *    - NEVER automatic; always requires explicit human operator confirmation.
+ * Enforces Phase 3 Correlation Rules:
+ * 1. Mandatory Incident-Type Gate (Max 15 pts): If type compatibility fails, correlation is REJECTED (DISTINCT).
+ * 2. Spatial Proximity (Max 35 pts)
+ * 3. Temporal Window (Max 25 pts)
+ * 4. Deterministic Jaccard Similarity (Max 12.5 pts)
+ * 5. Gemini Semantic Vector Embedding Cosine Similarity (Max 12.5 pts) -> Math.round(cosine * 12.5)
+ * 6. Overall Composite Score >= 80% strictly required for AUTOMATIC_LINK. High cosine similarity alone never bypasses this threshold.
  */
 export const correlateWithIncidents = (
   candidate: CorrelationCandidate,
@@ -130,6 +130,7 @@ export const correlateWithIncidents = (
         temporalScore: 0,
         typeCompatibilityScore: 0,
         jaccardTextSimilarityScore: 0,
+        embeddingSimilarityScore: 0,
       },
       explanation: ['No active incidents available in area to correlate against.'],
     };
@@ -144,6 +145,7 @@ export const correlateWithIncidents = (
       temporalScore: 0,
       typeCompatibilityScore: 0,
       jaccardTextSimilarityScore: 0,
+      embeddingSimilarityScore: 0,
     },
     explanation: ['No correlation candidate exceeded similarity thresholds.'],
   };
@@ -151,14 +153,43 @@ export const correlateWithIncidents = (
   const candidateTime = candidate.timestamp ? new Date(candidate.timestamp).getTime() : Date.now();
 
   for (const incident of activeIncidents) {
-    // Only correlate with active operational states
     if (['RESOLVED', 'MERGED'].includes(incident.status)) {
       continue;
     }
 
     const explanation: string[] = [];
 
-    // 1. Spatial Proximity (Max 35 pts, <= 750m threshold)
+    // 1. Mandatory Category / Type Compatibility Gate (Max 15 pts)
+    let typeScore = 0;
+    const candidateType = (candidate.type || candidate.category || '').toUpperCase();
+    const incidentType = (incident.type || '').toUpperCase();
+
+    if (candidateType && incidentType) {
+      if (candidateType === incidentType) {
+        typeScore = 15;
+        explanation.push(`Exact incident type match (${incidentType}): +15 pts`);
+      } else if (
+        (candidateType.includes('FIRE') && incidentType.includes('FIRE')) ||
+        (candidateType.includes('TRAFFIC') && incidentType.includes('ROAD_ACCIDENT')) ||
+        (candidateType.includes('CRASH') && incidentType.includes('ROAD_ACCIDENT')) ||
+        (candidateType.includes('GAS') && incidentType.includes('INDUSTRIAL_ACCIDENT')) ||
+        (candidateType.includes('HAZARD') && incidentType.includes('INDUSTRIAL_ACCIDENT')) ||
+        (candidateType.includes('SMOKE') && incidentType.includes('FIRE'))
+      ) {
+        typeScore = 15;
+        explanation.push(`Cross-compatible incident category (${candidateType} ~ ${incidentType}): +15 pts`);
+      } else {
+        explanation.push(`MANDATORY TYPE GATE FAILED (${candidateType} vs ${incidentType}): Correlation rejected.`);
+        // Mandatory incident-type gate failed -> Reject correlation for this incident immediately
+        continue;
+      }
+    } else {
+      // Neutral baseline when type is unassigned
+      typeScore = 10;
+      explanation.push(`Unassigned category baseline: +10 pts`);
+    }
+
+    // 2. Spatial Proximity (Max 35 pts, <= 750m threshold)
     let distanceScore = 0;
     let distanceMeters = 99999;
     if (candidate.location.coordinates && incident.location?.coordinates) {
@@ -181,7 +212,7 @@ export const correlateWithIncidents = (
       }
     }
 
-    // 2. Temporal Window (Max 25 pts, <= 60 min threshold)
+    // 3. Temporal Window (Max 25 pts, <= 60 min threshold)
     let temporalScore = 0;
     const incidentTime = new Date(incident.createdAt).getTime();
     const timeDeltaMinutes = Math.max(0, Math.round((candidateTime - incidentTime) / (1000 * 60)));
@@ -199,45 +230,30 @@ export const correlateWithIncidents = (
       explanation.push(`Report exceeds 60-minute window (${timeDeltaMinutes}m): +0 pts`);
     }
 
-    // 3. Category / Type Compatibility (Max 20 pts)
-    let typeScore = 0;
-    const candidateType = (candidate.type || candidate.category || '').toUpperCase();
-    const incidentType = (incident.type || '').toUpperCase();
-
-    if (candidateType && incidentType) {
-      if (candidateType === incidentType) {
-        typeScore = 20;
-        explanation.push(`Exact incident type match (${incidentType}): +20 pts`);
-      } else if (
-        (candidateType.includes('FIRE') && incidentType.includes('FIRE')) ||
-        (candidateType.includes('TRAFFIC') && incidentType.includes('ROAD_ACCIDENT')) ||
-        (candidateType.includes('CRASH') && incidentType.includes('ROAD_ACCIDENT')) ||
-        (candidateType.includes('GAS') && incidentType.includes('INDUSTRIAL_ACCIDENT')) ||
-        (candidateType.includes('HAZARD') && incidentType.includes('INDUSTRIAL_ACCIDENT')) ||
-        (candidateType.includes('SMOKE') && incidentType.includes('FIRE'))
-      ) {
-        typeScore = 15;
-        explanation.push(`Cross-compatible incident category (${candidateType} ~ ${incidentType}): +15 pts`);
-      } else {
-        explanation.push(`Incident category mismatch (${candidateType} vs ${incidentType}): +0 pts`);
-      }
-    }
-
-    // 4. Deterministic Jaccard Text Similarity (Max 20 pts)
-    // Note: Phase 2 uses deterministic Jaccard token overlap; Phase 3 introduces semantic Gemini embeddings
+    // 4. Deterministic Jaccard Text Similarity (Max 12.5 pts or 25 pts fallback)
     const combinedIncidentText = `${incident.title} ${incident.description} ${incident.location.address || ''}`;
     const combinedCandidateText = `${candidate.rawText} ${candidate.location.address || ''}`;
     const jaccardSim = calculateJaccardSimilarity(combinedCandidateText, combinedIncidentText);
-    const jaccardTextScore = Math.round(jaccardSim * 20);
 
-    if (jaccardTextScore > 0) {
+    // 5. Semantic Vector Embedding Similarity (Max 12.5 pts)
+    let embeddingScore = 0;
+    let jaccardTextScore = 0;
+
+    if (candidate.candidateEmbedding && incident.embedding && incident.embedding.length > 0) {
+      const cosineSim = calculateCosineSimilarity(candidate.candidateEmbedding, incident.embedding);
+      embeddingScore = cosineToSemanticPoints(cosineSim);
+      jaccardTextScore = Math.round(jaccardSim * 12.5);
       explanation.push(`Deterministic Jaccard keyword overlap (${(jaccardSim * 100).toFixed(0)}%): +${jaccardTextScore} pts`);
+      explanation.push(`Gemini semantic vector cosine similarity (${(cosineSim * 100).toFixed(1)}%): +${embeddingScore} pts`);
     } else {
-      explanation.push('Deterministic Jaccard text overlap: 0 pts');
+      // Deterministic fallback mode: Jaccard text score takes full 25 pts allocation
+      jaccardTextScore = Math.round(jaccardSim * 25);
+      explanation.push(`Deterministic Jaccard text overlap (${(jaccardSim * 100).toFixed(0)}%): +${jaccardTextScore} pts`);
+      explanation.push(`Gemini vector embedding score: 0 pts (Deterministic fallback mode active)`);
     }
 
     // Total Composite Confidence Score (0 - 100)
-    const confidenceScore = Math.min(100, distanceScore + temporalScore + typeScore + jaccardTextScore);
+    const confidenceScore = Math.min(100, distanceScore + temporalScore + typeScore + jaccardTextScore + embeddingScore);
 
     // Determine Match Type for incoming report
     let matchType: CorrelationMatchType = 'DISTINCT';
@@ -271,6 +287,7 @@ export const correlateWithIncidents = (
           temporalScore,
           typeCompatibilityScore: typeScore,
           jaccardTextSimilarityScore: jaccardTextScore,
+          embeddingSimilarityScore: embeddingScore,
         },
         explanation,
       };

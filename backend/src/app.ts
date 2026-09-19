@@ -7,6 +7,7 @@ import resourcesRoutes from './routes/resources.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import systemRoutes from './routes/system.routes.js';
 import intakeRoutes from './routes/intake.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { env } from './config/env.js';
 
@@ -42,6 +43,7 @@ export const createApp = () => {
   app.use('/api/v1/analytics', analyticsRoutes);
   app.use('/api/v1/system', systemRoutes);
   app.use('/api/v1/intake', intakeRoutes);
+  app.use('/api/v1/ai', aiRoutes);
 
   // 404 Handler
   app.use('*', (req, res) => {

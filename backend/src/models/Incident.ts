@@ -52,6 +52,7 @@ export interface IIncident extends Document {
   linkedReportIds: mongoose.Types.ObjectId[];
   mergedIntoIncidentId?: mongoose.Types.ObjectId;
   telemetryReadings: ITelemetryReading[];
+  embedding?: number[];
   aiSummary?: string;
   responseMetrics: {
     detectionTimestamp: Date;
@@ -119,6 +120,7 @@ const IncidentSchema = new Schema<IIncident>(
         timestamp: { type: Date, default: Date.now },
       },
     ],
+    embedding: { type: [Number], select: false },
     aiSummary: { type: String },
     responseMetrics: {
       detectionTimestamp: { type: Date, default: Date.now },

@@ -17,6 +17,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Send,
+  Sparkles,
+  Award,
 } from 'lucide-react';
 import { Incident, Report, Sensor, AuditEntry, Resource } from '../../types';
 import { Drawer } from '../ui/Drawer';
@@ -25,6 +27,7 @@ import { Button } from '../ui/Button';
 import { RoleGate } from '../ui/RoleGate';
 import { useAuth } from '../../context/AuthContext';
 import { LoadingSkeleton } from '../ui/LoadingSkeleton';
+import { ResourceRecommendationCard } from '../resources/ResourceRecommendationCard';
 
 interface IncidentDetailDrawerProps {
   incidentId: string | null;
@@ -47,6 +50,12 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
   const [availableResources, setAvailableResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
+
+  // Phase 3 AI States
+  const [aiSummary, setAiSummary] = useState<any>(null);
+  const [summaryLoading, setSummaryLoading] = useState<boolean>(false);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [recommendationsLoading, setRecommendationsLoading] = useState<boolean>(false);
 
   // Form states for operator actions
   const [selectedAction, setSelectedAction] = useState<string>('');
@@ -83,10 +92,61 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
   useEffect(() => {
     if (isOpen && incidentId) {
       fetchIncidentDetails();
+      setAiSummary(null);
+      setRecommendations([]);
       setSelectedAction('');
       setActionReason('');
     }
   }, [isOpen, incidentId]);
+
+  const handleGenerateSummary = async () => {
+    if (!incidentId) return;
+    setSummaryLoading(true);
+    try {
+      const res = await axios.post(`/api/v1/ai/summarize/${incidentId}`);
+      if (res.data?.data) {
+        setAiSummary(res.data.data);
+      }
+    } catch (err: any) {
+      console.error('[AI Summary Error]', err);
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
+  const handleFetchRecommendations = async () => {
+    if (!incidentId) return;
+    setRecommendationsLoading(true);
+    try {
+      const res = await axios.post('/api/v1/ai/recommend-resources', { incidentId });
+      if (res.data?.data?.recommendations) {
+        setRecommendations(res.data.data.recommendations);
+      }
+    } catch (err: any) {
+      console.error('[AI Recommendations Error]', err);
+    } finally {
+      setRecommendationsLoading(false);
+    }
+  };
+
+  const handleHumanDispatchConfirm = async (resourceId: string, callSign: string) => {
+    if (!incident) return;
+    try {
+      setActionLoading(true);
+      await axios.patch(`/api/v1/incidents/${incident._id}/action`, {
+        action: 'ASSIGN_RESOURCE',
+        resourceId,
+        reason: `Operator confirmed dispatch of recommended unit ${callSign} via SENTINEL AI Optimization Engine.`,
+      });
+      await fetchIncidentDetails();
+      onIncidentUpdated?.();
+      handleFetchRecommendations();
+    } catch (err: any) {
+      alert(err.response?.data?.error?.message || 'Failed to dispatch unit');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const handleExecuteAction = async (action: string) => {
     if (!incident) return;
@@ -152,7 +212,7 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
               <span className="font-bold text-amber-400">{incident.hazardLevel}</span>
             </div>
             <div>
-              <span className="text-slate-500 block text-[10px] uppercase">Response Time</span>
+              <span className="text-slate-500 block text-[10px] uppercase">Response Delay</span>
               <span className="font-bold text-cyan-400">
                 {incident.responseMetrics?.dispatchDelayMinutes || 4}m dispatch
               </span>
@@ -171,23 +231,107 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
             <p className="text-xs text-slate-200 leading-relaxed font-sans">{incident.description}</p>
           </div>
 
-          {/* AI Situation Briefing */}
-          {incident.aiSummary && (
-            <div className="p-3.5 rounded-lg bg-indigo-950/30 border border-indigo-900/60 space-y-1">
-              <div className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-wide flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                AI Telemetry Synthesis Briefing
+          {/* Phase 3 Grounded AI Situation Summary */}
+          <div className="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/80 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-display text-sm font-extrabold text-indigo-200">
+                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <span>GROUNDED AI SITUATION SUMMARY</span>
               </div>
-              <p className="text-xs text-indigo-200 leading-relaxed">{incident.aiSummary}</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleGenerateSummary}
+                disabled={summaryLoading}
+                icon={<Sparkles className="w-3.5 h-3.5" />}
+              >
+                {summaryLoading ? 'Synthesizing...' : 'Generate Grounded AI Briefing'}
+              </Button>
             </div>
-          )}
 
-          {/* Operator Action Bar & Audit Trail */}
+            {aiSummary ? (
+              <div className="space-y-2.5 text-xs text-slate-200 font-sans">
+                <p className="p-2.5 rounded bg-slate-900/90 border border-slate-800 leading-relaxed text-indigo-200 font-medium">
+                  {aiSummary.operationalOverview}
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                  <div className="p-2 rounded bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="font-mono font-bold text-emerald-400 block uppercase">Confirmed Facts</span>
+                    <ul className="list-disc list-inside space-y-0.5 text-slate-300">
+                      {aiSummary.confirmedFacts?.map((f: string, i: number) => (
+                        <li key={i}>{f}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="p-2 rounded bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="font-mono font-bold text-amber-400 block uppercase">Key Risks</span>
+                    <ul className="list-disc list-inside space-y-0.5 text-slate-300">
+                      {aiSummary.keyRisks?.map((r: string, i: number) => (
+                        <li key={i}>{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="p-2 rounded bg-slate-900 border border-slate-800 space-y-1">
+                    <span className="font-mono font-bold text-sky-400 block uppercase">Uncertainties</span>
+                    <ul className="list-disc list-inside space-y-0.5 text-slate-300">
+                      {aiSummary.uncertainties?.map((u: string, i: number) => (
+                        <li key={i}>{u}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">
+                Click "Generate Grounded AI Briefing" to synthesize live multi-source reports and sensor telemetry into operational overview.
+              </p>
+            )}
+          </div>
+
+          {/* Phase 3 Ranked Resource Recommendations */}
+          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-display text-sm font-extrabold text-slate-100">
+                <Award className="w-4 h-4 text-emerald-400" />
+                <span>AI RANKED RESOURCE RECOMMENDATIONS</span>
+              </div>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={handleFetchRecommendations}
+                disabled={recommendationsLoading}
+              >
+                {recommendationsLoading ? 'Calculating Scores...' : 'Fetch Recommendations'}
+              </Button>
+            </div>
+
+            {recommendations.length > 0 ? (
+              <div className="space-y-3">
+                {recommendations.map((item, idx) => (
+                  <ResourceRecommendationCard
+                    key={item.resourceId}
+                    item={item}
+                    rank={idx + 1}
+                    onDispatchConfirm={handleHumanDispatchConfirm}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">
+                Click "Fetch Recommendations" to run 100-point multi-factor resource scoring and urban speed ETA model.
+              </p>
+            )}
+          </div>
+
+          {/* Operator Action Controls */}
           <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-100 font-display uppercase tracking-wide flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4 text-rose-500" />
-                OPERATOR ACTION CONTROLS & AUDIT TRAIL
+                MANUAL OPERATOR ACTIONS & AUDIT TRAIL
               </span>
               <span className="text-[10px] font-mono text-slate-500">Active Role: {user?.role}</span>
             </div>
@@ -210,7 +354,7 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
                   variant={selectedAction === 'ASSIGN_RESOURCE' ? 'primary' : 'outline'}
                   onClick={() => setSelectedAction('ASSIGN_RESOURCE')}
                 >
-                  Dispatch Unit
+                  Manual Unit Dispatch
                 </Button>
               </RoleGate>
 
@@ -339,38 +483,6 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
             )}
           </div>
 
-          {/* Telemetry Sensor Readings */}
-          {sensors.length > 0 && (
-            <div className="space-y-2">
-              <span className="text-xs font-bold text-slate-200 font-display uppercase tracking-wide">
-                Zone Telemetry Sensors
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {sensors.map((s) => (
-                  <div key={s._id} className="p-2.5 rounded bg-slate-950 border border-slate-800 text-xs font-mono space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-400 text-[10px]">{s.sensorCode}</span>
-                      <span
-                        className={`text-[9px] px-1 rounded ${
-                          s.status === 'CRITICAL'
-                            ? 'bg-rose-950 text-rose-300'
-                            : s.status === 'WARNING'
-                            ? 'bg-amber-950 text-amber-300'
-                            : 'bg-slate-800 text-slate-300'
-                        }`}
-                      >
-                        {s.status}
-                      </span>
-                    </div>
-                    <div className="text-base font-bold text-slate-100">
-                      {s.currentReading} <span className="text-xs font-normal text-slate-400">{s.unit}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Consolidated Reports Stream */}
           {reports.length > 0 && (
             <div className="space-y-2">
@@ -385,11 +497,6 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
                       <span>{new Date(r.createdAt).toLocaleTimeString()}</span>
                     </div>
                     <p className="text-slate-200 leading-relaxed font-sans">{r.rawText}</p>
-                    {r.callerInfo?.name && (
-                      <div className="text-[10px] text-slate-500 font-mono">
-                        Caller: {r.callerInfo.name} ({r.callerInfo.phone || 'Private'})
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

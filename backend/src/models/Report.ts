@@ -25,6 +25,7 @@ export interface IReport extends Document {
     coordinates?: [number, number];
   };
   mediaUrls: string[];
+  embedding?: number[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -62,6 +63,7 @@ const ReportSchema = new Schema<IReport>(
       coordinates: [{ type: Number }],
     },
     mediaUrls: [{ type: String }],
+    embedding: { type: [Number], select: false },
   },
   { timestamps: true }
 );
