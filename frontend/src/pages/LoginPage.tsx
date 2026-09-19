@@ -55,10 +55,10 @@ export const LoginPage: React.FC = () => {
             <Shield className="w-7 h-7" />
           </div>
           <h1 className="text-xl font-extrabold text-slate-100 tracking-wider font-display">
-            PS-9 EMERGENCY OPERATIONS CENTER
+            SENTINEL EOC PLATFORM
           </h1>
-          <p className="text-xs text-slate-400 font-mono">
-            COMMAND & RESOURCE COORDINATION TERMINAL
+          <p className="text-xs text-slate-400 font-mono uppercase tracking-wider">
+            Smart Emergency Network & Triage Ingestion Layer
           </p>
         </div>
 

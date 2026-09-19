@@ -84,6 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Fallback default demo emails
       const roleEmailMap: Record<UserRole, string> = {
         OPERATOR: 'operator@ps9.demo',
+        SUPERVISOR: 'supervisor@ps9.demo',
         CONTROL_ROOM: 'supervisor@ps9.demo',
         FIELD_TEAM: 'field@ps9.demo',
         ADMIN: 'admin@ps9.demo',

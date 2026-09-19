@@ -20,7 +20,16 @@ export type IncidentStatus =
   | 'ON_SCENE'
   | 'RESOLVED'
   | 'ESCALATED'
-  | 'DELAYED';
+  | 'DELAYED'
+  | 'MERGED';
+
+export interface ITelemetryReading {
+  sensorCode: string;
+  sensorType: string;
+  reading: number;
+  unit: string;
+  timestamp: Date;
+}
 
 export interface IIncident extends Document {
   incidentNumber: string;
@@ -40,6 +49,9 @@ export interface IIncident extends Document {
   tags: string[];
   assignedResources: mongoose.Types.ObjectId[];
   primaryReporterId?: mongoose.Types.ObjectId;
+  linkedReportIds: mongoose.Types.ObjectId[];
+  mergedIntoIncidentId?: mongoose.Types.ObjectId;
+  telemetryReadings: ITelemetryReading[];
   aiSummary?: string;
   responseMetrics: {
     detectionTimestamp: Date;
@@ -79,7 +91,7 @@ const IncidentSchema = new Schema<IIncident>(
     },
     status: {
       type: String,
-      enum: ['ACTIVE', 'UNDER_REVIEW', 'ASSIGNED', 'EN_ROUTE', 'ON_SCENE', 'RESOLVED', 'ESCALATED', 'DELAYED'],
+      enum: ['ACTIVE', 'UNDER_REVIEW', 'ASSIGNED', 'EN_ROUTE', 'ON_SCENE', 'RESOLVED', 'ESCALATED', 'DELAYED', 'MERGED'],
       default: 'ACTIVE',
       index: true,
     },
@@ -96,6 +108,17 @@ const IncidentSchema = new Schema<IIncident>(
     tags: [{ type: String }],
     assignedResources: [{ type: Schema.Types.ObjectId, ref: 'Resource' }],
     primaryReporterId: { type: Schema.Types.ObjectId, ref: 'User' },
+    linkedReportIds: [{ type: Schema.Types.ObjectId, ref: 'Report' }],
+    mergedIntoIncidentId: { type: Schema.Types.ObjectId, ref: 'Incident' },
+    telemetryReadings: [
+      {
+        sensorCode: { type: String, required: true },
+        sensorType: { type: String, required: true },
+        reading: { type: Number, required: true },
+        unit: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
     aiSummary: { type: String },
     responseMetrics: {
       detectionTimestamp: { type: Date, default: Date.now },

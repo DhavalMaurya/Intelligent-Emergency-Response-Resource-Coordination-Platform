@@ -9,7 +9,10 @@ export type OperatorAction =
   | 'RESOLVE'
   | 'STATUS_CHANGE'
   | 'FIELD_NOTE'
-  | 'DISPATCH_ORDER';
+  | 'DISPATCH_ORDER'
+  | 'LINK_REPORT'
+  | 'MERGE_INCIDENT'
+  | 'TELEMETRY_UPDATE';
 
 export interface IIncidentUpdate extends Document {
   incidentId: mongoose.Types.ObjectId;
@@ -45,6 +48,9 @@ const IncidentUpdateSchema = new Schema<IIncidentUpdate>(
         'STATUS_CHANGE',
         'FIELD_NOTE',
         'DISPATCH_ORDER',
+        'LINK_REPORT',
+        'MERGE_INCIDENT',
+        'TELEMETRY_UPDATE',
       ],
       required: true,
       index: true,

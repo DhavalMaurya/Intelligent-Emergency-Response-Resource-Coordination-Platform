@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'CONTROL_ROOM' | 'OPERATOR' | 'FIELD_TEAM' | 'HOSPITAL';
+export type UserRole = 'ADMIN' | 'SUPERVISOR' | 'CONTROL_ROOM' | 'OPERATOR' | 'FIELD_TEAM' | 'HOSPITAL';
 
 export interface User {
   id: string;
@@ -28,7 +28,8 @@ export type IncidentStatus =
   | 'ON_SCENE'
   | 'RESOLVED'
   | 'ESCALATED'
-  | 'DELAYED';
+  | 'DELAYED'
+  | 'MERGED';
 
 export interface Incident {
   _id: string;
@@ -48,6 +49,15 @@ export interface Incident {
   hazardLevel: string;
   tags: string[];
   assignedResources: Resource[];
+  linkedReportIds?: string[];
+  mergedIntoIncidentId?: string;
+  telemetryReadings?: Array<{
+    sensorCode: string;
+    sensorType: string;
+    reading: number;
+    unit: string;
+    timestamp: string;
+  }>;
   aiSummary?: string;
   responseMetrics?: {
     detectionTimestamp?: string;
@@ -60,6 +70,30 @@ export interface Incident {
   escalationReason?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Report {
+  _id: string;
+  reportNumber: string;
+  source: 'CITIZEN' | 'OPERATOR_CALL' | 'SENSOR' | 'FIELD_TEAM';
+  rawText: string;
+  category?: string;
+  status: 'PENDING_TRIAGE' | 'VERIFIED' | 'LINKED' | 'DISMISSED';
+  confidenceScore?: number;
+  verified?: boolean;
+  incidentRef?: any;
+  location?: {
+    address: string;
+    zone?: string;
+    coordinates?: [number, number];
+  };
+  callerInfo?: {
+    name?: string;
+    phone?: string;
+    locationDescription?: string;
+  };
+  mediaUrls?: string[];
+  createdAt: string;
 }
 
 export type ResourceType = 'AMBULANCE' | 'FIRE_TRUCK' | 'RESCUE_TEAM' | 'POLICE_UNIT' | 'HAZMAT_UNIT';
@@ -82,20 +116,6 @@ export interface Resource {
   operationalNotes?: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Report {
-  _id: string;
-  source: 'CITIZEN' | 'OPERATOR_CALL' | 'SENSOR' | 'FIELD_TEAM';
-  rawText: string;
-  callerInfo?: {
-    name?: string;
-    phone?: string;
-    locationDescription?: string;
-  };
-  verified: boolean;
-  incidentRef?: string;
-  createdAt: string;
 }
 
 export interface Sensor {

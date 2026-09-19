@@ -6,10 +6,13 @@ import { AppError } from './errorHandler.js';
 
 export interface AuthenticatedUser {
   id: string;
+  _id?: string;
   email: string;
   role: UserRole;
   name: string;
 }
+
+export type AuthRequest = Request;
 
 declare global {
   namespace Express {

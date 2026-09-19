@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Bell, Clock, Activity, LogOut, User as UserIcon } from 'lucide-react';
+import { Shield, Bell, Clock, Activity, LogOut, PhoneCall, Globe, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 
 interface HeaderProps {
   onOpenHealthModal?: () => void;
+  onOpenCreateModal?: () => void;
   unreadAlertsCount?: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenHealthModal, unreadAlertsCount = 2 }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onOpenHealthModal,
+  onOpenCreateModal,
+  unreadAlertsCount = 2,
+}) => {
   const { user, logout } = useAuth();
   const { connected } = useSocket();
   const [time, setTime] = useState<Date>(new Date());
@@ -36,9 +42,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenHealthModal, unreadAlertsC
           </div>
           <div>
             <h1 className="text-sm font-extrabold tracking-wider text-slate-100 font-display">
-              PS-9 EMERGENCY PLATFORM
+              SENTINEL EOC
             </h1>
-            <p className="text-[10px] text-slate-400 font-mono tracking-wider">CIVIL EMERGENCY OPERATIONS CENTER</p>
+            <p className="text-[10px] text-slate-400 font-mono tracking-wider">SMART EMERGENCY NETWORK & TRIAGE INGESTION LAYER</p>
           </div>
         </div>
 
@@ -56,8 +62,30 @@ export const Header: React.FC<HeaderProps> = ({ onOpenHealthModal, unreadAlertsC
         </div>
       </div>
 
-      {/* Clock, Health shortcut, User Profile */}
-      <div className="flex items-center gap-5">
+      {/* Clock, Health shortcut, Actions, User Profile */}
+      <div className="flex items-center gap-4">
+        {/* Public Citizen Portal Quick Link */}
+        <Link
+          to="/report-emergency"
+          target="_blank"
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 hover:bg-slate-850 text-slate-300 text-xs font-medium transition-colors"
+          title="Open Public Citizen Emergency Report Portal"
+        >
+          <Globe className="w-3.5 h-3.5 text-blue-400" />
+          <span>Public Portal</span>
+        </Link>
+
+        {/* Rapid Call Intake Button */}
+        {onOpenCreateModal && (
+          <button
+            onClick={onOpenCreateModal}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-950/40 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Log Emergency Call</span>
+          </button>
+        )}
+
         {/* Real-Time Operational Clock */}
         <div className="hidden lg:flex items-center gap-3 bg-slate-950/80 px-3.5 py-1.5 rounded-lg border border-slate-800 text-xs font-mono">
           <Clock className="w-3.5 h-3.5 text-slate-400" />

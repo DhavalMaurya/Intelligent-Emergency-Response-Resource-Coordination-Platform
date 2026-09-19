@@ -35,7 +35,7 @@ io.on('connection', (socket) => {
 
 const startServer = async () => {
   console.log('====================================================');
-  console.log(' PS-9 Emergency Coordination Platform - Backend EOC ');
+  console.log(' SENTINEL EOC — Smart Emergency Network & Triage    ');
   console.log('====================================================');
 
   await connectDB();

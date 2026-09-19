@@ -13,6 +13,7 @@ import { AlertsPage } from './pages/AlertsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { AIAssistantPage } from './pages/AIAssistantPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { CitizenReportPage } from './pages/CitizenReportPage';
 import { LoadingSkeleton } from './components/ui/LoadingSkeleton';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -40,6 +41,9 @@ export function App() {
         <FilterProvider>
           <SocketProvider>
             <Routes>
+              {/* Public Citizen Emergency Intake Portal */}
+              <Route path="/report-emergency" element={<CitizenReportPage />} />
+
               {/* Authentication */}
               <Route path="/login" element={<LoginPage />} />
 
