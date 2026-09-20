@@ -126,7 +126,16 @@ desktop.ini
 # ------------------------------------------------------------------------------
 .gemini/
 .agents/
+.antigravity/
 .system_generated/
 **/scratch/
 **/browser/
+agent_updated.md
+
+# ------------------------------------------------------------------------------
+# 11. Documentation Assets (ALWAYS TRACK)
+# ------------------------------------------------------------------------------
+!screenshots/
+!screenshots/*
+
 

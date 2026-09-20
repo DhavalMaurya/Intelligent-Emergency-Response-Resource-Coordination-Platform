@@ -119,7 +119,7 @@ export const KpiRow: React.FC<KpiRowProps> = ({ kpis, loading = false }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 2xl:grid-cols-8 gap-3.5">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-3.5">
       {cards.map((card) => {
         const Icon = card.icon;
         return (
@@ -132,7 +132,7 @@ export const KpiRow: React.FC<KpiRowProps> = ({ kpis, loading = false }) => {
             } ${card.activeFilter ? 'ring-2 ring-rose-500 shadow-lg shadow-rose-950/60 bg-slate-850' : ''}`}
           >
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-[11px] font-bold font-mono uppercase tracking-wider text-slate-300 group-hover:text-white transition-colors truncate">
+              <span className="text-xs font-bold uppercase tracking-wide text-slate-300 group-hover:text-white transition-colors leading-tight">
                 {card.label}
               </span>
               <div className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 shrink-0 group-hover:border-slate-700 transition-colors">
@@ -145,7 +145,7 @@ export const KpiRow: React.FC<KpiRowProps> = ({ kpis, loading = false }) => {
                 {loading ? '...' : card.value}
               </span>
               <span
-                className={`text-[11px] font-mono font-semibold truncate ${
+                className={`text-[11px] font-medium leading-tight ${
                   card.deltaType === 'alert'
                     ? 'text-rose-400 font-bold'
                     : card.deltaType === 'positive'

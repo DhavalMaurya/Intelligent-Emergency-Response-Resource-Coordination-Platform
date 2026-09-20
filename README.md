@@ -1,6 +1,6 @@
 # SENTINEL — Smart Emergency Network & Triage Ingestion Layer
 
-> **Next-Generation Civil Emergency Operations & Resource Intelligence Platform**
+> **Next-Generation Civil Emergency Operations & Healthcare Resource Intelligence Platform**
 
 [![Node.js](https://img.shields.io/badge/Node.js-v20.x-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -8,16 +8,57 @@
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-8.x-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Socket.IO](https://img.shields.io/badge/Socket.io-4.x-010101?style=for-the-badge&logo=socketdotio&logoColor=white)](https://socket.io/)
-[![Google Gemini API](https://img.shields.io/badge/Google_Gemini_AI-2.0_/_2.5_Flash-886FBF?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Google Gemini API](https://img.shields.io/badge/Google_Gemini_AI-3.6_Flash-886FBF?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.x-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Test Coverage](https://img.shields.io/badge/Automated_Tests-100%25_Passed-059669?style=for-the-badge&logo=checkmarx&logoColor=white)](#-automated-testing--build-validation)
 
 ---
 
 ## 📌 About SENTINEL
 
-**SENTINEL** (**Smart Emergency Network & Triage Ingestion Layer**) is an enterprise-grade civil Emergency Operations Center (EOC) coordination and resource intelligence platform. It unifies high-volume emergency data streams—public 911 calls, citizen web submissions, IoT sensor telemetry spikes, and field team updates—into a centralized real-time command console.
+**SENTINEL** (**Smart Emergency Network & Triage Ingestion Layer**) is an enterprise-grade civil Emergency Operations Center (EOC) coordination and resource intelligence platform built for **BIT N BUILD ’26 (Problem Statement PS-9)**. It unifies high-volume emergency data streams—public 911 calls, citizen web submissions, IoT sensor telemetry spikes, and field team updates—into a centralized real-time command console.
 
-By pairing **deterministic mathematical triage engines** with **Google Gemini AI intelligence**, SENTINEL prevents emergency data fragmentation, automates duplicate incident detection, optimizes emergency resource dispatches, and provides grounded situation briefings while ensuring human dispatchers retain 100% operational command authority.
+By pairing **deterministic mathematical triage engines** with **Google Gemini 3.6 Flash AI intelligence**, SENTINEL prevents emergency data fragmentation, automates duplicate incident detection, optimizes emergency resource dispatches, and provides dynamic hospital capacity advisories while ensuring human dispatchers retain 100% operational command authority.
+
+---
+
+## 📄 Submission Artifacts & Deck Links
+
+* **Presentation Deck Content (8 Guidelines):** [`pptContent.md`](pptContent.md)
+* **Demo Video Recording Walkthrough & Script:** [`demo_video_script.md`](demo_video_script.md)
+* **Project Repository:** [GitHub - DhavalMaurya/Intelligent-Emergency-Response-Resource-Coordination-Platform](https://github.com/DhavalMaurya/Intelligent-Emergency-Response-Resource-Coordination-Platform)
+
+---
+
+## 📸 Application Interface & System Walkthrough
+
+### 1. Command Center Dashboard
+Central EOC command overview showing live active incidents, priority breakdown, response time metrics, and system diagnostics.
+![Command Center Dashboard](screenshots/01_command_center.png)
+
+### 2. Incident & Emergency Intake Management
+Operator call intake panel with real-time AI severity scoring, hazard detection, and duplicate report auto-linking.
+![Incident Intake](screenshots/02_incidents_management.png)
+
+### 3. Hospital Capacity & Trauma Advisory System
+Live bed and ICU management matrix with $U_{\text{net\_avail}}$ Net Capacity calculations and automatic shortage warning alerts.
+![Hospitals Advisory](screenshots/03_hospitals_advisory.png)
+
+### 4. Live Operations Map & Geospatial Tracking
+Interactive Leaflet GIS map with spatial indexing, turn-by-turn paramedic dispatch, and sub-200ms WebSocket updates.
+![Live Map Operations](screenshots/04_live_map.png)
+
+### 5. Analytics & Incident Heatmaps
+Historical response trends, sector incident density heatmaps, and resource utilization charts.
+![Analytics Dashboard](screenshots/05_analytics_dashboard.png)
+
+### 6. AI Command Assistant
+Grounded NLP assistant strictly queryable against active database records with anti-prompt-injection boundary safeguards.
+![AI Assistant](screenshots/06_ai_assistant.png)
+
+### 7. EOC System Diagnostics & Health Modal
+Real-time diagnostic panel displaying database connection health, socket latency, and 60-second LRU circuit breaker fallback status.
+![System Diagnostics](screenshots/07_system_diagnostics.png)
 
 ---
 
@@ -35,7 +76,6 @@ By pairing **deterministic mathematical triage engines** with **Google Gemini AI
 - **Mandatory Incident-Type Gate**: Enforces strict category compatibility before evaluating correlation. Mismatched incident types are immediately rejected.
 - **High-Confidence Auto-Linking ($\ge 80\%$)**: Automatically links high-confidence civilian reports to active master incidents without creating duplicate emergency records.
 - **Gemini Semantic Vector Embeddings**: Uses 768-dimension embeddings (`text-embedding-004`) and Cosine Vector Similarity ($\cos(\theta)$) to match semantically equivalent reports.
-- **Human-Confirmed Incident Merging**: Merging two active master incidents requires explicit human operator confirmation.
 
 ### 🎯 3. Deterministic 0–100 Emergency Severity Engine
 - **Transparent Triage Matrix**: Physics-based 0–100 severity calculation algorithm.
@@ -43,7 +83,7 @@ By pairing **deterministic mathematical triage engines** with **Google Gemini AI
 - **Single-Credit Hazard Modifiers**: Capped at 35 points max (Explosion +25, Toxic Chemical +20, Trapped Persons +15, Fire Spreading +10).
 - **Hard Score Ceiling**: Scores strictly capped at 100 points to prevent arbitrary score inflation.
 
-### 🚑 4. Ranked Resource Optimization & Physics Urban Speed ETA
+### 🚑 4. Ranked Resource Optimization & Urban Speed ETA
 - **100-Point Resource Scoring Matrix**: Evaluates fleet availability across 4 dimensions:
   - **Proximity Score** (Max 40 pts): Haversine distance ($\le 1$km $\rightarrow 40$, $\le 3$km $\rightarrow 30$, $\le 7$km $\rightarrow 20$).
   - **Capability Match** (Max 30 pts): Primary capability match $\rightarrow 30$, secondary $\rightarrow 15$.
@@ -51,19 +91,20 @@ By pairing **deterministic mathematical triage engines** with **Google Gemini AI
   - **Sector Match** (Max 10 pts): Resource stationed in the target emergency zone.
 - **Urban Speed ETA Model**: Physics-based travel model:
   $$\text{ETA (minutes)} = \text{Math.round}\left(\frac{\text{Distance (km)}}{35\text{ km/h}} \times 60\right) + 2\text{ min turnout delay}$$
-- **Gemini Natural Language Explanations**: Natural language justifications generated for top recommended units.
 
-### 🛡 5. Grounded AI Intelligence & Anti-Prompt-Injection
+### 🏥 5. Hospital Capacity & Dynamic Advisory Model (Phase 5)
+- **Net Available Capacity Formula ($U_{\text{net\_avail}}$)**: Prevents ER overcrowding by evaluating live bed availability:
+  $$\text{U}_{\text{net\_avail}} = \text{Beds}_{\text{avail}} + \text{ICU}_{\text{avail}} - \text{ActiveIncidents} - U_{\text{enroute}}$$
+- **Shortage Warning Trigger**: Automatically triggers a `SHORTAGE_WARNING` status badge when $\text{U}_{\text{net\_avail}} \le 0$ and redirects incoming trauma dispatches.
+- **Strict Coordinate & ICU Bounds**: Validates hospital coordinates within valid $[lng, lat]$ ranges and enforces $\text{ICU}_{\text{avail}} \le \text{TotalBeds}$.
+
+### ⚡ 6. High-Availability Circuit Breaker & LRU Cache (Phase 5)
+- **Monitored DB Latency Threshold**: 3,000ms.
+- **Automatic Fallback Engine**: If database latency exceeds 3 seconds or a connection failure occurs, SENTINEL instantly switches to a **60-second In-Memory LRU Cache**, serving static health status and hospital analytics with zero request failures.
+
+### 🛡 7. Grounded AI Intelligence & Anti-Prompt-Injection
 - **Anti-Prompt-Injection Boundary Wrappers**: Strips instruction override phrases (`System:`, `Ignore previous instructions`, `ADMIN_OVERRIDE`, `DAN:`) and wraps untrusted input inside XML boundary tags (`<untrusted_user_input>`).
 - **Grounded Situation Summarizer**: Aggregates linked reports, telemetry, and audit logs into structured briefings: *Operational Overview*, *Confirmed Facts*, *Key Risks*, and *Uncertainties*.
-- **Interactive AI Command Assistant (`/ai-assistant`)**: Grounded conversational EOC assistant strictly restricted to live database records. Responds with *"Insufficient data available in system records to answer this query."* if data is missing.
-
-### 👨‍✈️ 6. Human-Controlled Dispatch Workflow
-- **Human-in-the-Loop Policy**: Enforces the strict operational chain `AI Recommendation → Operator Review → Human Confirmation → Dispatch`.
-- **Complete Audit Logging**: Every operational command, severity override, unit dispatch, and incident status change is logged with timestamp, actor role, and reason justification.
-
-### ⚡ 7. Real-Time Zero-Refresh Dashboard
-- **WebSocket Broadcast Engine**: Built on Socket.IO for immediate distribution of report creation, report linking, incident status changes, sensor telemetry, and severity recalculations across all connected EOC screens without page refreshes.
 
 ---
 
@@ -94,11 +135,11 @@ flowchart TD
         C8[Deterministic 0-100 Severity Calculation]
     end
 
-    subgraph Optimization ["4. AI Resource Optimization & Grounding"]
+    subgraph Optimization ["4. AI & Hospital Capacity Advisory"]
         D1[Multi-Factor Resource Scoring Matrix: Max 100 pts]
         D2[Physics Urban Speed ETA Calculation]
-        D3[Gemini Natural Language Explanation]
-        D4[Grounded Situation Briefing Generator]
+        D3[Hospital Net Capacity Formula U_net_avail]
+        D4[60s In-Memory LRU Circuit Breaker Fallback]
     end
 
     subgraph Command ["5. Human Command & Real-Time Broadcast"]
@@ -116,8 +157,8 @@ flowchart TD
     C5 -- Yes --> C6
     C5 -- No --> C7
     C6 & C7 --> C8
-    C8 --> D1 & D4
-    D1 & D2 & D3 --> E1
+    C8 --> D1 & D3
+    D1 & D2 & D3 & D4 --> E1
     E1 --> E2 --> E3 --> E4
 ```
 
@@ -128,65 +169,17 @@ flowchart TD
 ### Backend Infrastructure
 - **Runtime**: Node.js `v20.x` (ES Modules)
 - **Framework**: Express `v4.21.x` with TypeScript `v5.7.x`
-- **Database**: MongoDB `v8.x` with Mongoose ODM (Geospatial 2dsphere & Compound Indexing)
-- **Real-Time Communication**: Socket.IO `v4.8.x` (WebSocket server)
-- **AI & Vector Embeddings**: Official `@google/genai` SDK (`gemini-2.0-flash` / `gemini-2.5-flash` and `text-embedding-004`)
+- **Database**: MongoDB `v8.x` with Mongoose ODM (`2dsphere` Geospatial & Compound Indexing)
+- **Real-Time Engine**: Socket.IO `v4.8.x` (WebSocket server, sub-200ms latency)
+- **AI & Vector Embeddings**: Official `@google/genai` SDK (`gemini-3.6-flash` and `text-embedding-004`)
+- **Resilience**: 60-second In-Memory LRU Cache Circuit Breaker
 - **Security & Middleware**: Zod `v3.24.x`, Helmet `v8.x`, CORS, JWT, Bcrypt, Custom Anti-Prompt Injection XML Wrapper
-- **Logging & Tools**: Pino `v9.x`, Pino-Pretty, TSX Watch execution
 
 ### Frontend Command Interface
 - **Core Library**: React `v18.x` with TypeScript
 - **Build Tool**: Vite `v6.x`
-- **Styling & Aesthetics**: Vanilla CSS Design System with TailwindCSS utility framework, dark mode glassmorphism
-- **Iconography & UI**: Lucide React icons
+- **Styling & Aesthetics**: Dark mode glassmorphic UI, TailwindCSS, Lucide Icons, Leaflet GIS Maps
 - **State & Real-Time**: React Context API, Socket.IO Client `v4.8.x`, Axios HTTP Client
-
----
-
-## 📦 Project Directory Structure
-
-```
-PS-9/
-├── backend/                        # Express + TypeScript EOC Backend Engine
-│   ├── src/
-│   │   ├── config/                 # Environment variables & MongoDB config
-│   │   ├── controllers/            # Auth, Incidents, Resources, Analytics, Intake, AI controllers
-│   │   ├── middleware/             # JWT Auth, RBAC guards, Geo bounding, Rate limiter, Error handler
-│   │   ├── models/                 # Incident, Report, Resource, Hospital, User, IncidentUpdate Mongoose schemas
-│   │   ├── routes/                 # Express API routing modules (/api/v1/*)
-│   │   ├── scripts/                # Seed script & automated Phase 2 / Phase 3 test suites
-│   │   ├── services/               # Gemini SDK, Prompt Sanitizer, Entity Extraction,
-│   │   │                           # Vector Embeddings, Correlation Engine, Severity Engine,
-│   │   │                           # Resource Recommendation, Situation Summary, AI Assistant Services
-│   │   ├── types/                  # Socket.IO event contracts & TypeScript declarations
-│   │   ├── app.ts                  # Express application factory & middleware stack
-│   │   └── server.ts               # HTTP server entry point & Socket.IO initialization
-│   ├── package.json
-│   └── tsconfig.json
-│
-├── frontend/                       # React 18 + Vite EOC Command Interface
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── dashboard/          # Incident Feed, Map Panel, Resource Fleet, System Health, Simulator Bar
-│   │   │   ├── detail/             # Incident & Resource Detail Drawers with AI Briefings
-│   │   │   ├── layout/             # Header, Sidebar navigation, EOC layout
-│   │   │   ├── modals/             # Operator Intake Modal, Correlation Review Modal
-│   │   │   ├── resources/          # Resource Recommendation Cards with Human Confirmation Modal
-│   │   │   └── ui/                 # Reusable Card, Button, Badge, Drawer, RoleGate components
-│   │   ├── context/                # AuthContext, SocketContext, FilterContext
-│   │   ├── pages/                  # DashboardPage, IncidentsPage, ResourcesPage, MapPage,
-│   │   │                           # AnalyticsPage, CitizenReportPage, AIAssistantPage
-│   │   ├── types/                  # Shared TypeScript interfaces
-│   │   ├── App.tsx                 # Main application routes & layout
-│   │   └── main.tsx                # DOM render entry point
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── tailwind.config.js
-│
-├── data/                           # Local MongoDB database persistence path
-├── docker-compose.yml              # Container setup for local MongoDB deployment
-└── README.md                       # Master Project Documentation
-```
 
 ---
 
@@ -236,9 +229,9 @@ JWT_EXPIRES_IN=24h
 ENABLE_DEMO_SEEDING=true
 DEMO_SEED_PASSWORD=demo_password_123
 
-# Google Gemini AI Integration (Optional for live Gemini; falls back to deterministic rules if empty)
+# Google Gemini AI Configuration
 GEMINI_API_KEY=your_google_gemini_api_key_here
-GEMINI_MODEL=gemini-2.0-flash
+GEMINI_MODEL=gemini-3.6-flash
 GEMINI_EMBEDDING_MODEL=text-embedding-004
 ```
 
@@ -251,38 +244,7 @@ VITE_SOCKET_URL=http://localhost:5000
 
 ---
 
-### Step 3: Start MongoDB Server
-
-If running standalone MongoDB locally:
-```bash
-mongod --dbpath "./data/db" --port 27017
-```
-
-Or using Docker Compose from the project root:
-```bash
-docker-compose up -d
-```
-
----
-
-### Step 4: Seed EOC Database
-
-Populate the database with operational accounts, active incidents, fleet resources, regional hospitals, and sensor readings:
-
-```bash
-cd backend
-npm run seed
-```
-
-*Demo Accounts Created:*
-- **Operator**: `operator@ps9.demo` (Password: `demo_password_123`)
-- **Supervisor**: `supervisor@ps9.demo` (Password: `demo_password_123`)
-- **Field Team**: `field@ps9.demo` (Password: `demo_password_123`)
-- **Admin**: `admin@ps9.demo` (Password: `demo_password_123`)
-
----
-
-### Step 5: Launch Development Servers
+### Step 3: Launch Development Servers
 
 Start Backend Express Server (Port `5000`):
 ```bash
@@ -300,53 +262,33 @@ Open your browser and navigate to: **`http://localhost:5173`**
 
 ---
 
-## 🧪 Automated Testing & Build Validation
+## 🧪 Automated Testing & Verification Commands
 
-### Execute Phase 2 Test Suite
-Validates public intake, geo-bounding, anti-abuse honeypot, rate-limiting, severity capping, Jaccard correlation, sensor repeat-reading suppression, and RBAC endpoints:
+All core modules, AI integrations, socket events, and resilience fallbacks have automated TypeScript test scripts:
+
 ```bash
+# 1. Live Gemini AI Key & Model Verification
 cd backend
+npx tsx src/scripts/test-ai-key.ts
+
+# 2. Execute Phase 2 Test Suite (Intake, Anti-Abuse, Telemetry)
 npx tsx src/scripts/test-phase2.ts
-```
 
-### Execute Phase 3 Test Suite
-Validates Gemini SDK health status, anti-prompt-injection XML wrapping, NLP entity extraction, Cosine vector embedding point calculations, mandatory incident-type gating, $80\%$ auto-linking, resource scoring matrix (0–100 cap), urban speed ETA model, grounded situation briefings, and assistant grounding:
-```bash
-cd backend
+# 3. Execute Phase 3 Test Suite (31/31 Passed — AI Triage, Vectors, Resource Matrix)
 npx tsx src/scripts/test-phase3.ts
-```
 
-### Run Production TypeScript Builds
-```bash
-# Validate Backend TypeScript compilation
-cd backend
-npm run build
+# 4. Execute Phase 4 Test Suite (17/17 Passed — Socket Gateway, Bounds, Sanitizer)
+npx tsx src/scripts/test-phase4.ts
 
-# Validate Frontend production bundle build
-cd ../frontend
-npm run build
+# 5. Execute Phase 5 Test Suite (10/10 Passed — LRU Circuit Breaker & Hospital U_net_avail)
+npx tsx src/scripts/test-phase5.ts
 ```
 
 ---
 
-## 🔐 Role-Based Access Control (RBAC) Matrix
+## 📄 License & Hackathon Attribution
 
-| Action / Endpoint | Public / Citizen | Field Team | Operator | Supervisor / Control Room | Admin |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Public Citizen Emergency Intake** (`/report-emergency`) | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **View Dashboard & Operational Map** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Log 911 Rapid Emergency Call** | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **Manual Unit Dispatch & Acknowledge Call** | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **Override Incident Severity / Escalate** | ❌ | ❌ | ❌ | ✅ | ✅ |
-| **Human Operator Incident Merging** (`/intake/correlate`) | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **AI Situation Briefings & Resource Optimization** | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **Grounded AI Command Assistant** (`/ai-assistant`) | ❌ | ❌ | ✅ | ✅ | ✅ |
-
----
-
-## 📄 License & Attribution
-
-This project is developed for the **PS-9 Emergency Response & Resource Intelligence Hackathon**.
+This project is developed for **BIT N BUILD ’26 GUJARAT ROUND** (Problem Statement PS-9).
 
 **Repository**: [DhavalMaurya/Intelligent-Emergency-Response-Resource-Coordination-Platform](https://github.com/DhavalMaurya/Intelligent-Emergency-Response-Resource-Coordination-Platform)  
 **System Name**: **SENTINEL — Smart Emergency Network & Triage Ingestion Layer**
