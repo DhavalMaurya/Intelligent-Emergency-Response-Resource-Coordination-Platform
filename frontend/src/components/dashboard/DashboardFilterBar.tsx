@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filter, RotateCcw, Clock, ShieldAlert, Layers, Activity, MapPin } from 'lucide-react';
+import { Filter, RotateCcw, Clock, ShieldAlert, Layers, Activity, MapPin, ChevronDown } from 'lucide-react';
 import { useFilters } from '../../context/FilterContext';
 import { Severity, IncidentType, IncidentStatus } from '../../types';
 
@@ -83,7 +83,7 @@ export const DashboardFilterBar: React.FC = () => {
           <select
             value={filters.severity}
             onChange={(e) => setSeverity(e.target.value as any)}
-            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
+            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg pl-3 pr-8 py-1.5 appearance-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
           >
             {severities.map((s) => (
               <option key={s.value} value={s.value}>
@@ -91,6 +91,7 @@ export const DashboardFilterBar: React.FC = () => {
               </option>
             ))}
           </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
         {/* Incident Type Selector */}
@@ -98,7 +99,7 @@ export const DashboardFilterBar: React.FC = () => {
           <select
             value={filters.type}
             onChange={(e) => setType(e.target.value as any)}
-            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
+            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg pl-3 pr-8 py-1.5 appearance-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
           >
             {incidentTypes.map((t) => (
               <option key={t.value} value={t.value}>
@@ -106,6 +107,7 @@ export const DashboardFilterBar: React.FC = () => {
               </option>
             ))}
           </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
         {/* Status Selector */}
@@ -113,7 +115,7 @@ export const DashboardFilterBar: React.FC = () => {
           <select
             value={filters.status}
             onChange={(e) => setStatus(e.target.value as any)}
-            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
+            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg pl-3 pr-8 py-1.5 appearance-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
           >
             {statuses.map((st) => (
               <option key={st.value} value={st.value}>
@@ -121,6 +123,7 @@ export const DashboardFilterBar: React.FC = () => {
               </option>
             ))}
           </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
         {/* Zone Selector */}
@@ -128,7 +131,7 @@ export const DashboardFilterBar: React.FC = () => {
           <select
             value={filters.zone}
             onChange={(e) => setZone(e.target.value)}
-            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
+            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg pl-3 pr-8 py-1.5 appearance-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
           >
             {zones.map((z) => (
               <option key={z.value} value={z.value}>
@@ -136,6 +139,7 @@ export const DashboardFilterBar: React.FC = () => {
               </option>
             ))}
           </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 

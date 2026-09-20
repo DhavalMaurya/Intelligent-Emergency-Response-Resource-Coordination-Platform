@@ -289,7 +289,7 @@ export const DashboardPage: React.FC = () => {
       {/* Global Filter Bar */}
       <DashboardFilterBar />
 
-      <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 flex-1 max-w-[1920px] mx-auto w-full">
+      <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 flex-1 w-full">
         {/* Hackathon Interactive Scenario Simulator Bar */}
         <ScenarioSimulatorBar />
 
@@ -320,9 +320,9 @@ export const DashboardPage: React.FC = () => {
         <KpiRow kpis={kpis} loading={loading} />
 
         {/* Tactical Command Split: Live Operations Map & Side Panels */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
-          {/* Main Map View (7 cols on lg, 8 cols on xl desktop) */}
-          <div className="lg:col-span-7 xl:col-span-8 space-y-5 sm:space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 w-full items-start">
+          {/* Main Map & Live Incident Stream (7 cols on lg/xl desktop) */}
+          <div className="lg:col-span-7 xl:col-span-7 space-y-5 sm:space-y-6">
             <LiveMap
               incidents={incidents}
               resources={resources}
@@ -331,12 +331,15 @@ export const DashboardPage: React.FC = () => {
               height="h-[480px]"
             />
 
-            {/* Operational Analytics Charts Suite */}
-            <OperationalCharts data={chartsData} targetResponseMinutes={kpis.targetThresholdMinutes} />
+            {/* Live Streaming Incident Feed */}
+            <LiveIncidentFeed
+              incidents={incidents}
+              onSelectIncident={(inc) => setSelectedIncidentId(inc._id)}
+            />
           </div>
 
-          {/* Right Operational Feeds & AI Briefing (5 cols on lg, 4 cols on xl desktop) */}
-          <div className="lg:col-span-5 xl:col-span-4 space-y-5 sm:space-y-6">
+          {/* Right Operational Feeds & AI Briefing (5 cols on lg/xl desktop - full 41.7% width) */}
+          <div className="lg:col-span-5 xl:col-span-5 space-y-5 sm:space-y-6">
             {/* AI Situation Briefing */}
             <AiSituationSummary
               criticalCount={kpis.criticalIncidents}
@@ -357,14 +360,11 @@ export const DashboardPage: React.FC = () => {
               resources={resources}
               onSelectResource={(res) => setSelectedResourceId(res._id)}
             />
-
-            {/* Live Streaming Incident Feed */}
-            <LiveIncidentFeed
-              incidents={incidents}
-              onSelectIncident={(inc) => setSelectedIncidentId(inc._id)}
-            />
           </div>
         </div>
+
+        {/* Full-Width Operational Analytics & Telemetry Charts Suite */}
+        <OperationalCharts data={chartsData} targetResponseMinutes={kpis.targetThresholdMinutes} />
       </div>
 
       {/* Operator Rapid Call Intake Modal */}

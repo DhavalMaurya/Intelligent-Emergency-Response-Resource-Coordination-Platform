@@ -132,6 +132,24 @@ export interface Sensor {
   lastPing: string;
 }
 
+export interface Hospital {
+  _id: string;
+  name: string;
+  zone: string;
+  location: {
+    address: string;
+    coordinates: [number, number];
+  };
+  traumaLevel: number;
+  totalBeds: number;
+  availableBeds: number;
+  icuTotal?: number;
+  icuAvailable: number;
+  status: 'NORMAL' | 'HIGH_OCCUPANCY' | 'DIVERT_STATUS';
+  contactPhone?: string;
+  lastUpdated?: string;
+}
+
 export interface AuditEntry {
   _id: string;
   incidentId: string;

@@ -4,7 +4,7 @@ import L from 'leaflet';
 import { Incident, Resource, Severity } from '../../types';
 import { SeverityBadge, StatusBadge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { Eye, Layers, Compass, Crosshair, Activity, Flame } from 'lucide-react';
+import { Eye, Layers, Compass, Crosshair, Activity, Flame, ChevronDown } from 'lucide-react';
 
 interface LiveMapProps {
   incidents: Incident[];
@@ -123,92 +123,99 @@ export const LiveMap: React.FC<LiveMapProps> = ({
   });
 
   return (
-    <div className={`relative w-full ${height} rounded-lg overflow-hidden border border-slate-800 shadow-xl bg-slate-950`}>
-      {/* Map Header Overlay */}
-      <div className="absolute top-3 left-3 z-[400] bg-slate-900/90 backdrop-blur-md px-3.5 py-2 rounded-lg border border-slate-800 shadow-lg flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs font-bold text-slate-100 font-display tracking-wider uppercase">
-            LIVE OPERATIONS MAP
+    <div className={`relative w-full ${height} rounded-xl overflow-hidden border border-slate-800 shadow-xl bg-slate-950 flex flex-col`}>
+      {/* Map Header Bar */}
+      <div className="px-4 py-2.5 bg-slate-900/95 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2.5 z-10 backdrop-blur-md shrink-0">
+        {/* Left: Title & Operational Counters */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-bold text-slate-100 font-display tracking-wider uppercase">
+              LIVE OPERATIONS MAP
+            </span>
+          </div>
+          <span className="hidden sm:inline-block text-[11px] font-mono text-slate-400 border-l border-slate-800 pl-3 truncate">
+            {incidents.length} Incidents • {resources.length} Fleet Units • {vectorPairs.length} Vectors
           </span>
         </div>
-        <span className="text-[10px] font-mono text-slate-400 border-l border-slate-700 pl-2">
-          {incidents.length} Incidents | {resources.length} Units | {vectorPairs.length} Dispatched Vectors
-        </span>
-      </div>
 
-      {/* Layer Filters & Recenter Controls Overlay */}
-      <div className="absolute top-3 right-3 z-[400] flex flex-wrap items-center justify-end gap-2 max-w-[calc(100%-24px)]">
-        <div className="bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 shadow-xl flex flex-wrap items-center gap-2.5 text-xs font-mono">
-          <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100">
-            <input
-              type="checkbox"
-              checked={showIncidents}
-              onChange={(e) => setShowIncidents(e.target.checked)}
-              className="rounded border-slate-700 bg-slate-950 text-rose-600 focus:ring-0 w-3.5 h-3.5"
-            />
-            <span>Incidents</span>
-          </label>
-          <span className="text-slate-700">|</span>
-          <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100">
-            <input
-              type="checkbox"
-              checked={showResources}
-              onChange={(e) => setShowResources(e.target.checked)}
-              className="rounded border-slate-700 bg-slate-950 text-cyan-500 focus:ring-0 w-3.5 h-3.5"
-            />
-            <span>Fleet Units</span>
-          </label>
-          <span className="text-slate-700">|</span>
-          <label className="flex items-center gap-1.5 cursor-pointer text-amber-300 hover:text-amber-100">
-            <input
-              type="checkbox"
-              checked={showHeatmap}
-              onChange={(e) => setShowHeatmap(e.target.checked)}
-              className="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0 w-3.5 h-3.5"
-            />
-            <span>Density Heatmap</span>
-          </label>
-          <span className="text-slate-700">|</span>
-          <label className="flex items-center gap-1.5 cursor-pointer text-sky-300 hover:text-sky-100">
-            <input
-              type="checkbox"
-              checked={showVectors}
-              onChange={(e) => setShowVectors(e.target.checked)}
-              className="rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 w-3.5 h-3.5"
-            />
-            <span>Vectors</span>
-          </label>
-        </div>
+        {/* Right: Layer Toggles & Controls */}
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 flex flex-wrap items-center gap-2.5 text-xs font-mono">
+            <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100">
+              <input
+                type="checkbox"
+                checked={showIncidents}
+                onChange={(e) => setShowIncidents(e.target.checked)}
+                className="rounded border-slate-700 bg-slate-950 text-rose-600 focus:ring-0 w-3.5 h-3.5"
+              />
+              <span>Incidents</span>
+            </label>
+            <span className="text-slate-800">|</span>
+            <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100">
+              <input
+                type="checkbox"
+                checked={showResources}
+                onChange={(e) => setShowResources(e.target.checked)}
+                className="rounded border-slate-700 bg-slate-950 text-cyan-500 focus:ring-0 w-3.5 h-3.5"
+              />
+              <span>Fleet Units</span>
+            </label>
+            <span className="text-slate-800">|</span>
+            <label className="flex items-center gap-1.5 cursor-pointer text-amber-300 hover:text-amber-100">
+              <input
+                type="checkbox"
+                checked={showHeatmap}
+                onChange={(e) => setShowHeatmap(e.target.checked)}
+                className="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0 w-3.5 h-3.5"
+              />
+              <span>Density Heatmap</span>
+            </label>
+            <span className="text-slate-800">|</span>
+            <label className="flex items-center gap-1.5 cursor-pointer text-sky-300 hover:text-sky-100">
+              <input
+                type="checkbox"
+                checked={showVectors}
+                onChange={(e) => setShowVectors(e.target.checked)}
+                className="rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 w-3.5 h-3.5"
+              />
+              <span>Vectors</span>
+            </label>
+          </div>
 
-        {showHeatmap && (
-          <select
-            value={aggregationWindow}
-            onChange={(e: any) => setAggregationWindow(e.target.value)}
-            className="bg-slate-900/95 backdrop-blur-md text-[11px] font-mono text-amber-300 border border-slate-800 rounded-xl px-2.5 py-1.5 focus:outline-none shadow-xl cursor-pointer"
+          {showHeatmap && (
+            <div className="relative">
+              <select
+                value={aggregationWindow}
+                onChange={(e: any) => setAggregationWindow(e.target.value)}
+                className="bg-slate-950 text-[11px] font-mono text-amber-300 border border-slate-800 rounded-lg pl-2.5 pr-7 py-1 appearance-none focus:outline-none cursor-pointer"
+              >
+                <option value="24h">24h Heatmap</option>
+                <option value="7d">7d Heatmap</option>
+                <option value="all">All Active</option>
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-amber-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          )}
+
+          <button
+            onClick={resetMap}
+            className="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-slate-300 hover:text-slate-100 hover:bg-slate-850 shadow-sm transition-colors shrink-0"
+            title="Recenter Metro Operations Map"
           >
-            <option value="24h">24h Heatmap</option>
-            <option value="7d">7d Heatmap</option>
-            <option value="all">All Active</option>
-          </select>
-        )}
-
-        <button
-          onClick={resetMap}
-          className="bg-slate-900/95 backdrop-blur-md p-2 rounded-xl border border-slate-800 text-slate-300 hover:text-slate-100 hover:bg-slate-800 shadow-xl transition-colors shrink-0"
-          title="Recenter Metro Operations Map"
-        >
-          <Crosshair className="w-4 h-4" />
-        </button>
+            <Crosshair className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
-      {/* Map Container */}
-      <MapContainer center={center} zoom={zoom} scrollWheelZoom={true} className="h-full w-full z-0">
-        <MapController center={center} zoom={zoom} />
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+      {/* Map Canvas */}
+      <div className="flex-1 w-full min-h-0 relative z-0">
+        <MapContainer center={center} zoom={zoom} scrollWheelZoom={true} className="h-full w-full z-0">
+          <MapController center={center} zoom={zoom} />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
         {/* Heatmap Density Overlay Layer */}
         {showHeatmap &&
@@ -315,6 +322,7 @@ export const LiveMap: React.FC<LiveMapProps> = ({
             );
           })}
       </MapContainer>
+      </div>
 
       {/* Map Legend at Bottom Left */}
       <div className="absolute bottom-3 left-3 z-[400] bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 text-[10px] font-mono flex items-center gap-3">

@@ -9,6 +9,7 @@ import systemRoutes from './routes/system.routes.js';
 import intakeRoutes from './routes/intake.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
+import hospitalRoutes from './routes/hospital.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { env } from './config/env.js';
 
@@ -42,6 +43,7 @@ export const createApp = () => {
   app.use('/api/v1/incidents', incidentsRoutes);
   app.use('/api/v1/resources', resourcesRoutes);
   app.use('/api/v1/analytics', analyticsRoutes);
+  app.use('/api/v1/hospitals', hospitalRoutes);
   app.use('/api/v1/system', systemRoutes);
   app.use('/api/v1/intake', intakeRoutes);
   app.use('/api/v1/ai', aiRoutes);

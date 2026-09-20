@@ -11,6 +11,7 @@ import {
   Settings,
   Activity,
   Layers,
+  Building2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -25,6 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenHealthModal }) => {
     { to: '/dashboard', label: 'Command Center', icon: LayoutDashboard },
     { to: '/incidents', label: 'Incidents', icon: AlertOctagon },
     { to: '/resources', label: 'Resources & Fleet', icon: Truck },
+    { to: '/hospitals', label: 'Hospitals & EMS', icon: Building2 },
     { to: '/map', label: 'Live Operations Map', icon: MapPin },
     { to: '/alerts', label: 'Alerts & Escalations', icon: Bell },
     { to: '/analytics', label: 'Analytics', icon: BarChart3 },

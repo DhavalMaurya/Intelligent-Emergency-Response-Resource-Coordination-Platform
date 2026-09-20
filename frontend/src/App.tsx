@@ -11,6 +11,7 @@ import { ResourcesPage } from './pages/ResourcesPage';
 import { MapPage } from './pages/MapPage';
 import { AlertsPage } from './pages/AlertsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
+import { HospitalsPage } from './pages/HospitalsPage';
 import { AIAssistantPage } from './pages/AIAssistantPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { CitizenReportPage } from './pages/CitizenReportPage';
@@ -60,6 +61,7 @@ export function App() {
                 <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="incidents" element={<IncidentsPage />} />
                 <Route path="resources" element={<ResourcesPage />} />
+                <Route path="hospitals" element={<HospitalsPage />} />
                 <Route path="map" element={<MapPage />} />
                 <Route path="alerts" element={<AlertsPage />} />
                 <Route path="analytics" element={<AnalyticsPage />} />

@@ -24,7 +24,7 @@ export const ResourceAvailabilityPanel: React.FC<ResourceAvailabilityPanelProps>
     <Card
       title="RESOURCE FLEET AVAILABILITY"
       subtitle="Operational readiness & shortage monitoring"
-      className="h-full"
+      className="w-full"
       bodyClassName="space-y-4"
     >
       <div className="space-y-3">

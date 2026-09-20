@@ -28,7 +28,7 @@ export const AiSituationSummary: React.FC<AiSituationSummaryProps> = ({
           AI ENGINE
         </span>
       }
-      className="h-full border-indigo-950/80 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/20"
+      className="w-full border-indigo-950/80 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/20"
       bodyClassName="space-y-3.5"
     >
       <div className="space-y-3 text-xs leading-relaxed">

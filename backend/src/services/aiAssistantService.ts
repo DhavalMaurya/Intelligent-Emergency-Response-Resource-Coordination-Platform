@@ -64,8 +64,8 @@ export async function processAIAssistantQuery(userQuery: string): Promise<AIAssi
         name: h.name,
         zone: h.zone,
         bedsAvailable: h.availableBeds,
-        icuBedsAvailable: h.icuBedsAvailable,
-        divertStatus: h.divertStatus,
+        icuBedsAvailable: h.icuAvailable,
+        divertStatus: h.status === 'DIVERT_STATUS',
       })),
     },
   };

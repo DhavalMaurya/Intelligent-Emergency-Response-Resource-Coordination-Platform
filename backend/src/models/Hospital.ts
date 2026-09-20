@@ -1,45 +1,66 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export type HospitalStatus = 'NORMAL' | 'HIGH_OCCUPANCY' | 'DIVERT_STATUS';
+
 export interface IHospital extends Document {
   name: string;
-  code: string;
   zone: string;
-  location: [number, number]; // [lng, lat]
+  location: {
+    address: string;
+    coordinates: [number, number]; // [longitude, latitude]
+  };
+  traumaLevel: number; // 1, 2, or 3
   totalBeds: number;
   availableBeds: number;
-  icuBedsTotal: number;
-  icuBedsAvailable: number;
-  traumaLevel: 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3' | 'COMMUNITY';
-  divertStatus: boolean;
-  emergencyPhone: string;
-  createdAt: Date;
-  updatedAt: Date;
+  icuAvailable: number;
+  status: HospitalStatus;
+  contactPhone?: string;
+  lastUpdated: Date;
 }
 
 const HospitalSchema = new Schema<IHospital>(
   {
     name: { type: String, required: true, trim: true },
-    code: { type: String, required: true, unique: true, index: true },
     zone: { type: String, required: true, index: true },
     location: {
-      type: [Number],
-      required: true,
+      address: { type: String, required: true },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        required: true,
+        validate: {
+          validator: function (val: number[]) {
+            return (
+              Array.isArray(val) &&
+              val.length === 2 &&
+              val[0] >= -180 &&
+              val[0] <= 180 &&
+              val[1] >= -90 &&
+              val[1] <= 90
+            );
+          },
+          message: 'Coordinates must be valid [longitude, latitude] bounds.',
+        },
+      },
     },
-    totalBeds: { type: Number, default: 200 },
-    availableBeds: { type: Number, default: 45 },
-    icuBedsTotal: { type: Number, default: 30 },
-    icuBedsAvailable: { type: Number, default: 6 },
-    traumaLevel: {
+    traumaLevel: { type: Number, required: true, enum: [1, 2, 3], default: 1 },
+    totalBeds: { type: Number, required: true, min: 1 },
+    availableBeds: { type: Number, required: true, min: 0 },
+    icuAvailable: { type: Number, required: true, min: 0 },
+    status: {
       type: String,
-      enum: ['LEVEL_1', 'LEVEL_2', 'LEVEL_3', 'COMMUNITY'],
-      default: 'LEVEL_2',
+      enum: ['NORMAL', 'HIGH_OCCUPANCY', 'DIVERT_STATUS'],
+      default: 'NORMAL',
+      index: true,
     },
-    divertStatus: { type: Boolean, default: false },
-    emergencyPhone: { type: String, default: '555-0199' },
+    contactPhone: { type: String },
+    lastUpdated: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-HospitalSchema.index({ location: '2dsphere' });
+// 2D geospatial index for nearest hospital spatial queries
+HospitalSchema.index({ 'location.coordinates': '2d' });
 
 export const Hospital = mongoose.model<IHospital>('Hospital', HospitalSchema);

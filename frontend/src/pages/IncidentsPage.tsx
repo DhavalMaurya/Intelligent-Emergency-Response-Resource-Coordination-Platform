@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { AlertOctagon, Search, Filter, Eye, Plus, ArrowUpDown } from 'lucide-react';
+import { AlertOctagon, Search, Filter, Eye, Plus, ArrowUpDown, ChevronDown } from 'lucide-react';
 import { Incident } from '../types';
 import { SeverityBadge, StatusBadge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
@@ -89,50 +89,56 @@ export const IncidentsPage: React.FC = () => {
             </Button>
           </form>
 
-          <div className="flex items-center gap-2 flex-wrap text-xs">
-            <select
-              value={severity}
-              onChange={(e) => {
-                setSeverity(e.target.value);
-                setPage(1);
-              }}
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none"
-            >
-              <option value="ALL">All Severities</option>
-              <option value="CRITICAL">Critical</option>
-              <option value="HIGH">High</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="LOW">Low</option>
-            </select>
+            <div className="relative">
+              <select
+                value={severity}
+                onChange={(e) => {
+                  setSeverity(e.target.value);
+                  setPage(1);
+                }}
+                className="bg-slate-950 border border-slate-800 rounded-lg pl-3 pr-8 py-1.5 text-slate-200 appearance-none focus:outline-none focus:border-rose-500 cursor-pointer"
+              >
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">Critical</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
 
-            <select
-              value={status}
-              onChange={(e) => {
-                setStatus(e.target.value);
-                setPage(1);
-              }}
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none"
-            >
-              <option value="ALL">All Statuses</option>
-              <option value="ACTIVE">Active Unassigned</option>
-              <option value="ASSIGNED">Assigned</option>
-              <option value="EN_ROUTE">En Route</option>
-              <option value="ON_SCENE">On Scene</option>
-              <option value="DELAYED">Delayed</option>
-              <option value="ESCALATED">Escalated</option>
-              <option value="RESOLVED">Resolved</option>
-            </select>
+            <div className="relative">
+              <select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value);
+                  setPage(1);
+                }}
+                className="bg-slate-950 border border-slate-800 rounded-lg pl-3 pr-8 py-1.5 text-slate-200 appearance-none focus:outline-none focus:border-rose-500 cursor-pointer"
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="ACTIVE">Active Unassigned</option>
+                <option value="ASSIGNED">Assigned</option>
+                <option value="EN_ROUTE">En Route</option>
+                <option value="ON_SCENE">On Scene</option>
+                <option value="DELAYED">Delayed</option>
+                <option value="ESCALATED">Escalated</option>
+                <option value="RESOLVED">Resolved</option>
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
 
-            <select
-              value={zone}
-              onChange={(e) => {
-                setZone(e.target.value);
-                setPage(1);
-              }}
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none"
-            >
-              <option value="ALL">All Sectors</option>
-              <option value="Sector 1 - Downtown">Sector 1 (Downtown)</option>
+            <div className="relative">
+              <select
+                value={zone}
+                onChange={(e) => {
+                  setZone(e.target.value);
+                  setPage(1);
+                }}
+                className="bg-slate-950 border border-slate-800 rounded-lg pl-3 pr-8 py-1.5 text-slate-200 appearance-none focus:outline-none focus:border-rose-500 cursor-pointer"
+              >
+                <option value="ALL">All Sectors</option>
+                <option value="Sector 1 - Downtown">Sector 1 (Downtown)</option>
               <option value="Sector 2 - Harbour">Sector 2 (Harbour)</option>
               <option value="Sector 3 - Industrial Corridor">Sector 3 (Industrial)</option>
               <option value="Sector 4 - Residential North">Sector 4 (North)</option>

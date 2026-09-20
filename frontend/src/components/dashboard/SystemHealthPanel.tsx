@@ -73,7 +73,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ isOpen, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] overflow-hidden flex items-center justify-center p-4">
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
 

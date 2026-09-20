@@ -40,6 +40,8 @@ export const runSeed = async () => {
     Notification.deleteMany({}),
   ]);
 
+  await Hospital.collection.dropIndexes().catch(() => {});
+
   // 1. Seed Users (Development-Only Passwords)
   console.log('[Seed] Generating role accounts (Development/Demo Mode)...');
   const passwordHash = await bcrypt.hash(env.DEMO_SEED_PASSWORD, 10);
@@ -84,55 +86,59 @@ export const runSeed = async () => {
   const hospitals = await Hospital.create([
     {
       name: 'Metro General Hospital & Trauma Center',
-      code: 'HOSP-MGH-01',
       zone: 'Sector 1 - Downtown',
-      location: [-122.418, 37.776],
+      location: {
+        address: '100 Metro Health Plaza, Sector 1',
+        coordinates: [-122.418, 37.776],
+      },
+      traumaLevel: 1,
       totalBeds: 450,
       availableBeds: 34,
-      icuBedsTotal: 60,
-      icuBedsAvailable: 4,
-      traumaLevel: 'LEVEL_1',
-      divertStatus: false,
-      emergencyPhone: '555-0101',
+      icuAvailable: 4,
+      status: 'NORMAL',
+      contactPhone: '555-0101',
     },
     {
       name: 'Harbour Bay Medical Center',
-      code: 'HOSP-HBMC-02',
       zone: 'Sector 2 - Harbour',
-      location: [-122.405, 37.781],
+      location: {
+        address: '50 Harbour Bay Way, Sector 2',
+        coordinates: [-122.405, 37.781],
+      },
+      traumaLevel: 2,
       totalBeds: 280,
       availableBeds: 18,
-      icuBedsTotal: 30,
-      icuBedsAvailable: 2,
-      traumaLevel: 'LEVEL_2',
-      divertStatus: false,
-      emergencyPhone: '555-0102',
+      icuAvailable: 2,
+      status: 'NORMAL',
+      contactPhone: '555-0102',
     },
     {
       name: 'St. Jude Industrial Health Center',
-      code: 'HOSP-SJI-03',
       zone: 'Sector 3 - Industrial Corridor',
-      location: [-122.392, 37.755],
+      location: {
+        address: '300 Port Authority Blvd, Sector 3',
+        coordinates: [-122.392, 37.755],
+      },
+      traumaLevel: 2,
       totalBeds: 180,
-      availableBeds: 12,
-      icuBedsTotal: 25,
-      icuBedsAvailable: 0,
-      traumaLevel: 'LEVEL_2',
-      divertStatus: true, // Diverting due to surge
-      emergencyPhone: '555-0103',
+      availableBeds: 0,
+      icuAvailable: 0,
+      status: 'DIVERT_STATUS',
+      contactPhone: '555-0103',
     },
     {
       name: 'Northgate Community Hospital',
-      code: 'HOSP-NGH-04',
       zone: 'Sector 4 - Residential North',
-      location: [-122.435, 37.795],
+      location: {
+        address: '800 Northgate Ridge Rd, Sector 4',
+        coordinates: [-122.435, 37.795],
+      },
+      traumaLevel: 3,
       totalBeds: 210,
       availableBeds: 52,
-      icuBedsTotal: 20,
-      icuBedsAvailable: 8,
-      traumaLevel: 'LEVEL_3',
-      divertStatus: false,
-      emergencyPhone: '555-0104',
+      icuAvailable: 8,
+      status: 'NORMAL',
+      contactPhone: '555-0104',
     },
   ]);
 
@@ -525,6 +531,7 @@ export const runSeed = async () => {
   console.log('[Seed] Linking synthetic incident reports...');
   await Report.create([
     {
+      reportNumber: 'REP-2026-8001',
       source: 'CITIZEN',
       rawText: 'Black acrid smoke pouring out of warehouse windows on Industrial Way. Sparks flying, I see workers coughing near the loading docks!',
       callerInfo: { name: 'David Miller', phone: '555-0182', locationDescription: 'Across from Rail Depot' },
@@ -532,12 +539,14 @@ export const runSeed = async () => {
       incidentRef: incident1._id,
     },
     {
+      reportNumber: 'REP-2026-8002',
       source: 'SENSOR',
       rawText: 'Automated Alarm: Industrial Sensor SENS-IND-301 tripped CRITICAL smoke obscuration 94.2% at Zone 3.',
       verified: true,
       incidentRef: incident1._id,
     },
     {
+      reportNumber: 'REP-2026-8003',
       source: 'OPERATOR_CALL',
       rawText: 'Highway patrol dispatch confirming tanker truck collision with passenger sedan. Fuel tank punctured.',
       callerInfo: { name: 'Dispatch Desk 4', phone: '555-9110' },
@@ -545,6 +554,7 @@ export const runSeed = async () => {
       incidentRef: incident2._id,
     },
     {
+      reportNumber: 'REP-2026-8004',
       source: 'CITIZEN',
       rawText: 'The big metal scaffold at the new tower construction site just snapped! Cables are swaying right over the sidewalk!',
       callerInfo: { name: 'Sarah Chen', phone: '555-0144' },

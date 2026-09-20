@@ -20,7 +20,7 @@ export const LiveIncidentFeed: React.FC<LiveIncidentFeedProps> = ({ incidents, o
           REALTIME
         </div>
       }
-      className="h-full"
+      className="w-full"
       bodyClassName="p-0 overflow-y-auto max-h-[380px] divide-y divide-slate-800/80"
     >
       {incidents.length === 0 ? (

@@ -25,7 +25,7 @@ export const CriticalAlertsPanel: React.FC<CriticalAlertsPanelProps> = ({
           {alerts.length} URGENT
         </span>
       }
-      className="h-full"
+      className="w-full"
       bodyClassName="space-y-2.5 overflow-y-auto max-h-[380px]"
     >
       {alerts.length === 0 ? (
