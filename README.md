@@ -62,7 +62,7 @@ Interactive data visualizers including hourly incident volume vs resolution prog
 
 ### 🧠 2. Multi-Factor Correlation & Semantic Duplicate Detection
 - **Multi-Factor Correlation Analyzer**: Evaluates incoming reports against active incidents across 5 dimensions:
-  $$\text{Composite Score} = \text{Spatial (35)} + \text{Temporal (25)} + \text{Type Gate (15)} + \text{Text Overlap (12.5)} + \text{Vector Embedding (12.5)}$$
+  `Composite Score = Spatial (35) + Temporal (25) + Type Gate (15) + Text Overlap (12.5) + Vector Embedding (12.5)`
 - **Mandatory Incident-Type Gate**: Enforces strict category compatibility before evaluating correlation. Mismatched incident types are immediately rejected.
 - **High-Confidence Auto-Linking ($\ge 80\%$)**: Automatically links high-confidence civilian reports to active master incidents without creating duplicate emergency records.
 - **Gemini Semantic Vector Embeddings**: Uses 768-dimension embeddings (`text-embedding-004`) and Cosine Vector Similarity ($\cos(\theta)$) to match semantically equivalent reports.
@@ -80,13 +80,15 @@ Interactive data visualizers including hourly incident volume vs resolution prog
   - **Status & Capacity Subtotal** (Max 20 pts): `AVAILABLE` status (12 pts) + Crew sufficiency (8 pts).
   - **Sector Match** (Max 10 pts): Resource stationed in the target emergency zone.
 - **Urban Speed ETA Model**: Physics-based travel model:
-  $$\text{ETA (minutes)} = \text{Math.round}\left(\frac{\text{Distance (km)}}{35\text{ km/h}} \times 60\right) + 2\text{ min turnout delay}$$
+  `ETA (minutes) = Math.round((Distance / 35 km/h) * 60) + 2 min turnout delay`
 
 ### 🏥 5. Hospital Capacity & Dynamic Advisory Model (Phase 5)
-- **Net Available Capacity Formula ($U_{\text{net\_avail}}$)**: Prevents ER overcrowding by evaluating live bed availability:
-  $$\text{U}_{\text{net\_avail}} = \text{Beds}_{\text{avail}} + \text{ICU}_{\text{avail}} - \text{ActiveIncidents} - U_{\text{enroute}}$$
-- **Shortage Warning Trigger**: Automatically triggers a `SHORTAGE_WARNING` status badge when $\text{U}_{\text{net\_avail}} \le 0$ and redirects incoming trauma dispatches.
-- **Strict Coordinate & ICU Bounds**: Validates hospital coordinates within valid $[lng, lat]$ ranges and enforces $\text{ICU}_{\text{avail}} \le \text{TotalBeds}$.
+- **Net Available Capacity Formula (`U_net_avail`)**: Prevents ER overcrowding by evaluating live bed availability:
+  ```text
+  U_net_avail = Beds_avail + ICU_avail - ActiveIncidents - U_enroute
+  ```
+- **Shortage Warning Trigger**: Automatically triggers a `SHORTAGE_WARNING` status badge when `U_net_avail <= 0` and redirects incoming trauma dispatches.
+- **Strict Coordinate & ICU Bounds**: Validates hospital coordinates within valid `[lng, lat]` ranges and enforces `ICU_avail <= TotalBeds`.
 
 ### ⚡ 6. High-Availability Circuit Breaker & LRU Cache (Phase 5)
 - **Monitored DB Latency Threshold**: 3,000ms.

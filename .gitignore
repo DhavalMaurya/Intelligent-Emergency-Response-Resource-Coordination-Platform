@@ -115,11 +115,16 @@ desktop.ini
 !.vscode/settings.json
 
 # ------------------------------------------------------------------------------
-# 9. Presentation Decks, Video Scripts & Project Plans
+# 9. Presentation Decks, Video Scripts & Heavy Media
 # ------------------------------------------------------------------------------
 *.pptx
 *.ppt
 *.key
+*.mp4
+*.mov
+*.avi
+*.mkv
+demo-video.mp4
 pptContent.md
 demo_video_script.md
 PS9_5_Updated_5_Phase_Project_Plan.md
