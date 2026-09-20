@@ -53,24 +53,24 @@ export const DashboardFilterBar: React.FC = () => {
   ];
 
   return (
-    <div className="bg-slate-900/90 border-b border-slate-800 px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div className="bg-slate-900/95 border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3 text-xs backdrop-blur-md">
       {/* Left controls */}
-      <div className="flex flex-wrap items-center gap-2.5">
-        <span className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-slate-400 uppercase mr-1">
+      <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-0">
+        <span className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-slate-400 uppercase mr-1 shrink-0">
           <Filter className="w-3.5 h-3.5 text-rose-500" />
           FILTERS:
         </span>
 
         {/* Time Range Pills */}
-        <div className="flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800">
+        <div className="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800 shrink-0">
           {timeRanges.map((tr) => (
             <button
               key={tr.value}
               onClick={() => setTimeRange(tr.value)}
-              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
+              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-all ${
                 filters.timeRange === tr.value
                   ? 'bg-rose-600 text-white font-semibold shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
               }`}
             >
               {tr.label}
@@ -79,11 +79,11 @@ export const DashboardFilterBar: React.FC = () => {
         </div>
 
         {/* Severity Selector */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <select
             value={filters.severity}
             onChange={(e) => setSeverity(e.target.value as any)}
-            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:outline-none cursor-pointer"
+            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
           >
             {severities.map((s) => (
               <option key={s.value} value={s.value}>
@@ -94,11 +94,11 @@ export const DashboardFilterBar: React.FC = () => {
         </div>
 
         {/* Incident Type Selector */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <select
             value={filters.type}
             onChange={(e) => setType(e.target.value as any)}
-            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:outline-none cursor-pointer"
+            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
           >
             {incidentTypes.map((t) => (
               <option key={t.value} value={t.value}>
@@ -109,11 +109,11 @@ export const DashboardFilterBar: React.FC = () => {
         </div>
 
         {/* Status Selector */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <select
             value={filters.status}
             onChange={(e) => setStatus(e.target.value as any)}
-            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:outline-none cursor-pointer"
+            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
           >
             {statuses.map((st) => (
               <option key={st.value} value={st.value}>
@@ -124,11 +124,11 @@ export const DashboardFilterBar: React.FC = () => {
         </div>
 
         {/* Zone Selector */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <select
             value={filters.zone}
             onChange={(e) => setZone(e.target.value)}
-            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:outline-none cursor-pointer"
+            className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/50 focus:outline-none cursor-pointer hover:border-slate-700 transition-colors shadow-sm"
           >
             {zones.map((z) => (
               <option key={z.value} value={z.value}>
@@ -143,9 +143,9 @@ export const DashboardFilterBar: React.FC = () => {
       {isFiltered && (
         <button
           onClick={resetFilters}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-semibold hover:bg-rose-900/80 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-950/80 border border-rose-800 text-rose-300 text-xs font-semibold hover:bg-rose-900/90 transition-colors shadow-sm shrink-0"
         >
-          <RotateCcw className="w-3 h-3" />
+          <RotateCcw className="w-3.5 h-3.5" />
           Reset Filters
         </button>
       )}

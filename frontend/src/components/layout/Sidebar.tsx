@@ -36,9 +36,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenHealthModal }) => {
   }
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 select-none">
+    <aside className="w-56 xl:w-64 bg-slate-900/95 border-r border-slate-800 flex flex-col justify-between shrink-0 select-none backdrop-blur-md">
       <div className="py-4">
-        <div className="px-5 mb-4">
+        <div className="px-4 xl:px-5 mb-4">
           <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500">
             OPERATIONAL NAVIGATION
           </span>

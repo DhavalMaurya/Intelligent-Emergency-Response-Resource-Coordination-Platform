@@ -48,7 +48,9 @@ const startServer = async () => {
   });
 };
 
-startServer().catch((err) => {
-  console.error('[Server Error] Startup failed:', err);
-  process.exit(1);
-});
+if (process.argv[1] && (process.argv[1].endsWith('server.ts') || process.argv[1].endsWith('server.js'))) {
+  startServer().catch((err) => {
+    console.error('[Server Error] Startup failed:', err);
+    process.exit(1);
+  });
+}

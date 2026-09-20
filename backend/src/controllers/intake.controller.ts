@@ -4,8 +4,10 @@ import { Incident, IIncident } from '../models/Incident.js';
 import { Report, IReport } from '../models/Report.js';
 import { Sensor } from '../models/Sensor.js';
 import { Resource } from '../models/Resource.js';
+import { Notification } from '../models/Notification.js';
 import { IncidentUpdate } from '../models/IncidentUpdate.js';
 import { calculateSeverity } from '../services/severityEngine.js';
+import { scheduleSLAJob } from '../services/slaWorker.js';
 import {
   correlateWithIncidents,
   calculateHaversineDistanceMeters,
@@ -236,6 +238,9 @@ export const createOperatorIncident = async (req: AuthRequest, res: Response): P
 
     await incident.save();
 
+    // Schedule SLA monitoring job for P1 / CRITICAL incidents
+    await scheduleSLAJob(incident);
+
     // If initialReportId was provided, update that report to LINKED
     if (initialReportId && mongoose.isValidObjectId(initialReportId)) {
       await Report.findByIdAndUpdate(initialReportId, {
@@ -264,13 +269,38 @@ export const createOperatorIncident = async (req: AuthRequest, res: Response): P
       },
     });
 
-    // 5. Query Recommended Resources ("Submit & Recommend" without auto-dispatch)
+    // 5. Query Recommended Resources & Check Resource Shortage Trigger
     const recommendedResources = await Resource.find({
       status: 'AVAILABLE',
       zone: incident.location.zone,
     })
       .limit(4)
       .select('identifier name type status capabilities zone baseStation currentLocation');
+
+    if (recommendedResources.length === 0 && (incident.priority === 'P1' || incident.severity === 'CRITICAL')) {
+      const shortageNotif = await Notification.create({
+        title: `RESOURCE SHORTAGE ALERT: ${incident.location.zone}`,
+        message: `Critical Incident ${incident.incidentNumber} logged in ${incident.location.zone} but 0 available response units exist in this zone!`,
+        level: 'CRITICAL',
+        type: 'RESOURCE_SHORTAGE',
+        relatedIncidentId: incident._id,
+        zone: incident.location.zone,
+        acknowledged: false,
+      });
+
+      if (io) {
+        io.emit('notification.created', {
+          notificationId: shortageNotif._id,
+          title: shortageNotif.title,
+          message: shortageNotif.message,
+          level: shortageNotif.level,
+          type: shortageNotif.type,
+          relatedIncidentId: incident._id,
+          zone: shortageNotif.zone,
+          createdAt: shortageNotif.createdAt,
+        });
+      }
+    }
 
     // 6. Real-time broadcast
     io.emit('incident.created', {
@@ -657,6 +687,30 @@ export const ingestSensorTelemetry = async (req: Request, res: Response): Promis
 
     await sensor.save();
 
+    // Trigger Sensor Spike Notification if reading >= 1.5x critical threshold
+    if (sensor.currentReading >= sensor.criticalThreshold * 1.5) {
+      const spikeNotif = await Notification.create({
+        title: `CRITICAL SENSOR SPIKE ALERT: ${sensor.sensorCode}`,
+        message: `Sensor ${sensor.sensorCode} in ${sensor.zone} registered reading ${sensor.currentReading} ${sensor.unit}, exceeding 1.5x critical threshold!`,
+        level: 'CRITICAL',
+        type: 'SENSOR_ALERT',
+        zone: sensor.zone,
+        acknowledged: false,
+      });
+
+      if (io) {
+        io.emit('notification.created', {
+          notificationId: spikeNotif._id,
+          title: spikeNotif.title,
+          message: spikeNotif.message,
+          level: spikeNotif.level,
+          type: spikeNotif.type,
+          zone: spikeNotif.zone,
+          createdAt: spikeNotif.createdAt,
+        });
+      }
+    }
+
     // 3. Sensor Repeat-Reading Check: Check if an active incident already exists in this zone or linked to sensor
     let activeIncident: IIncident | null = null;
     if (sensor.incidentRef) {
@@ -742,6 +796,7 @@ export const ingestSensorTelemetry = async (req: Request, res: Response): Promis
       });
 
       await newInc.save();
+      await scheduleSLAJob(newInc);
       sensor.incidentRef = newInc._id as mongoose.Types.ObjectId;
       await sensor.save();
 

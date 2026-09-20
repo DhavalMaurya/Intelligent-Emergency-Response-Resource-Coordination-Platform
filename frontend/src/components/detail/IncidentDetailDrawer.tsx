@@ -28,6 +28,7 @@ import { RoleGate } from '../ui/RoleGate';
 import { useAuth } from '../../context/AuthContext';
 import { LoadingSkeleton } from '../ui/LoadingSkeleton';
 import { ResourceRecommendationCard } from '../resources/ResourceRecommendationCard';
+import { ResponseTimeline } from './ResponseTimeline';
 
 interface IncidentDetailDrawerProps {
   incidentId: string | null;
@@ -218,6 +219,9 @@ export const IncidentDetailDrawer: React.FC<IncidentDetailDrawerProps> = ({
               </span>
             </div>
           </div>
+
+          {/* Phase 4 Visual Response SLA Timeline */}
+          <ResponseTimeline incident={incident} />
 
           {/* Description & Address */}
           <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800 space-y-1.5">

@@ -8,6 +8,7 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import systemRoutes from './routes/system.routes.js';
 import intakeRoutes from './routes/intake.routes.js';
 import aiRoutes from './routes/ai.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { env } from './config/env.js';
 
@@ -44,6 +45,7 @@ export const createApp = () => {
   app.use('/api/v1/system', systemRoutes);
   app.use('/api/v1/intake', intakeRoutes);
   app.use('/api/v1/ai', aiRoutes);
+  app.use('/api/v1/notifications', notificationRoutes);
 
   // 404 Handler
   app.use('*', (req, res) => {

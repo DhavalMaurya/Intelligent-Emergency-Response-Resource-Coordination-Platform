@@ -119,38 +119,38 @@ export const KpiRow: React.FC<KpiRowProps> = ({ kpis, loading = false }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 2xl:grid-cols-8 gap-3.5">
       {cards.map((card) => {
         const Icon = card.icon;
         return (
           <div
             key={card.id}
             onClick={card.onClick}
-            className={`p-3.5 rounded-lg bg-slate-900/90 border transition-all duration-150 ${card.borderColor} ${
-              card.onClick ? 'cursor-pointer hover:bg-slate-850 hover:border-slate-600' : ''
-            } ${card.activeFilter ? 'ring-2 ring-rose-500 shadow-md shadow-rose-950' : ''}`}
+            title={`${card.label}: ${card.value} (${card.delta})`}
+            className={`p-3.5 sm:p-4 rounded-xl bg-slate-900/95 border backdrop-blur-md transition-all duration-200 group flex flex-col justify-between ${card.borderColor} ${
+              card.onClick ? 'cursor-pointer hover:bg-slate-850 hover:border-slate-500 hover:shadow-lg hover:-translate-y-0.5' : ''
+            } ${card.activeFilter ? 'ring-2 ring-rose-500 shadow-lg shadow-rose-950/60 bg-slate-850' : ''}`}
           >
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 truncate">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-[11px] font-bold font-mono uppercase tracking-wider text-slate-300 group-hover:text-white transition-colors truncate">
                 {card.label}
               </span>
-              <Icon className={`w-4 h-4 ${card.color} ${card.pulse ? 'animate-bounce' : ''}`} />
+              <div className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 shrink-0 group-hover:border-slate-700 transition-colors">
+                <Icon className={`w-4 h-4 ${card.color} ${card.pulse ? 'animate-bounce' : ''}`} />
+              </div>
             </div>
 
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold text-slate-100 font-mono tracking-tight">
+            <div className="flex items-baseline justify-between gap-2 mt-1">
+              <span className="text-2xl font-black text-slate-100 font-mono tracking-tight">
                 {loading ? '...' : card.value}
               </span>
-            </div>
-
-            <div className="mt-1 flex items-center justify-between text-[10px] font-mono">
               <span
-                className={`truncate ${
+                className={`text-[11px] font-mono font-semibold truncate ${
                   card.deltaType === 'alert'
-                    ? 'text-rose-400 font-semibold'
+                    ? 'text-rose-400 font-bold'
                     : card.deltaType === 'positive'
-                    ? 'text-emerald-400 font-medium'
-                    : 'text-slate-500'
+                    ? 'text-emerald-400 font-semibold'
+                    : 'text-slate-400'
                 }`}
               >
                 {card.delta}

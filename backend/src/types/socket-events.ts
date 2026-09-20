@@ -84,7 +84,9 @@ export interface AuditEntryDTO {
     | 'DISPATCH_ORDER'
     | 'LINK_REPORT'
     | 'MERGE_INCIDENT'
-    | 'TELEMETRY_UPDATE';
+    | 'TELEMETRY_UPDATE'
+    | 'NOTIFICATION_ACKNOWLEDGE'
+    | 'MANUAL_ESCALATION';
   summary: string;
   previousState?: any;
   newState?: any;
@@ -97,10 +99,12 @@ export interface AlertNotificationDTO {
   title: string;
   message: string;
   level: 'INFO' | 'WARNING' | 'CRITICAL';
-  type: 'DELAY_BREACH' | 'RESOURCE_SHORTAGE' | 'ESCALATION' | 'HAZARD_ALERT';
+  type: 'DELAY_BREACH' | 'RESOURCE_SHORTAGE' | 'ESCALATION' | 'HAZARD_ALERT' | 'SENSOR_ALERT' | 'CRITICAL_DELAY' | 'SUPERVISOR_ESCALATION';
   relatedIncidentId?: string;
+  incidentNumber?: string;
   zone?: string;
-  createdAt: string;
+  createdAt?: string;
+  timestamp?: any;
 }
 
 export interface SystemHealthDTO {
@@ -118,12 +122,14 @@ export interface ServerToClientEvents {
   'incident.created': (incident: IncidentDTO) => void;
   'incident.updated': (update: { incidentId: string; changes: Partial<IncidentDTO>; audit?: AuditEntryDTO }) => void;
   'incident.correlated': (payload: { masterIncidentId: string; reportId?: string; mergedIncidentId?: string; newReportCount: number; message: string }) => void;
-  'incident.severity.updated': (payload: { incidentId: string; previousSeverity: string; newSeverity: string; newPriority: string; score: number; explanation: string[] }) => void;
-  'incident.status.updated': (payload: { incidentId: string; previousStatus: string; newStatus: string }) => void;
+  'incident.severity.updated': (payload: { incidentId: string; incidentNumber?: string; previousSeverity?: string; newSeverity: string; newPriority?: string; score?: number; explanation?: string[]; reason?: string; timestamp?: any }) => void;
+  'incident.status.updated': (payload: { incidentId: string | any; incidentNumber?: string; previousStatus?: string; status?: string; newStatus?: string; escalationReason?: string; timestamp?: any }) => void;
   'report.created': (report: ReportDTO) => void;
   'report.linked': (payload: { reportId: string; incidentId: string }) => void;
   'sensor.reading': (payload: { sensorCode: string; reading: number; unit: string; status: string; zone: string; incidentId?: string }) => void;
-  'resource.updated': (resource: ResourceDTO) => void;
+  'resource.assigned': (payload: { incidentId: string; resourceId: string; callSign: string; status: string; timestamp: Date }) => void;
+  'resource.updated': (resource: Partial<ResourceDTO> | any) => void;
+  'notification.created': (notification: any) => void;
   'alert.created': (alert: AlertNotificationDTO) => void;
   'system.health.updated': (health: SystemHealthDTO) => void;
 }

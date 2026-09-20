@@ -289,14 +289,14 @@ export const DashboardPage: React.FC = () => {
       {/* Global Filter Bar */}
       <DashboardFilterBar />
 
-      <div className="p-6 space-y-6 flex-1">
+      <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 flex-1 max-w-[1920px] mx-auto w-full">
         {/* Hackathon Interactive Scenario Simulator Bar */}
         <ScenarioSimulatorBar />
 
         {/* Real-time Ticker / Live Ingestion Stream Banner */}
         {liveNotifications.length > 0 && (
           <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 shadow-md flex items-center justify-between text-xs animate-in fade-in">
-            <div className="flex items-center gap-2 text-cyan-400 font-semibold">
+            <div className="flex items-center gap-2 text-cyan-400 font-semibold shrink-0">
               <Radio className="w-4 h-4 animate-pulse" />
               <span>LIVE INGESTION STREAM (ZERO-REFRESH):</span>
             </div>
@@ -309,7 +309,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             <button
               onClick={() => setLiveNotifications([])}
-              className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors shrink-0"
             >
               Clear
             </button>
@@ -320,9 +320,9 @@ export const DashboardPage: React.FC = () => {
         <KpiRow kpis={kpis} loading={loading} />
 
         {/* Tactical Command Split: Live Operations Map & Side Panels */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Main Map View (8 cols on desktop) */}
-          <div className="lg:col-span-8 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+          {/* Main Map View (7 cols on lg, 8 cols on xl desktop) */}
+          <div className="lg:col-span-7 xl:col-span-8 space-y-5 sm:space-y-6">
             <LiveMap
               incidents={incidents}
               resources={resources}
@@ -335,8 +335,8 @@ export const DashboardPage: React.FC = () => {
             <OperationalCharts data={chartsData} targetResponseMinutes={kpis.targetThresholdMinutes} />
           </div>
 
-          {/* Right Operational Feeds & AI Briefing (4 cols on desktop) */}
-          <div className="lg:col-span-4 space-y-6">
+          {/* Right Operational Feeds & AI Briefing (5 cols on lg, 4 cols on xl desktop) */}
+          <div className="lg:col-span-5 xl:col-span-4 space-y-5 sm:space-y-6">
             {/* AI Situation Briefing */}
             <AiSituationSummary
               criticalCount={kpis.criticalIncidents}

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Incident, Resource, Severity } from '../../types';
 import { SeverityBadge, StatusBadge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { Eye, Layers, Compass, Crosshair } from 'lucide-react';
+import { Eye, Layers, Compass, Crosshair, Activity, Flame } from 'lucide-react';
 
 interface LiveMapProps {
   incidents: Incident[];
@@ -85,11 +85,42 @@ export const LiveMap: React.FC<LiveMapProps> = ({
   const [zoom, setZoom] = useState<number>(13);
   const [showIncidents, setShowIncidents] = useState<boolean>(true);
   const [showResources, setShowResources] = useState<boolean>(true);
+  const [showHeatmap, setShowHeatmap] = useState<boolean>(false);
+  const [showVectors, setShowVectors] = useState<boolean>(true);
+  const [aggregationWindow, setAggregationWindow] = useState<'24h' | '7d' | 'all'>('24h');
 
   const resetMap = () => {
     setCenter(defaultCenter);
     setZoom(13);
   };
+
+  // Filter incidents for heatmap aggregation window
+  const getFilteredHeatmapIncidents = () => {
+    if (aggregationWindow === 'all') return incidents.filter((i) => i.status !== 'MERGED');
+    const now = Date.now();
+    const hours = aggregationWindow === '24h' ? 24 : 168;
+    return incidents.filter((i) => {
+      if (i.status === 'MERGED') return false;
+      const created = new Date(i.createdAt).getTime();
+      return now - created <= hours * 60 * 60 * 1000;
+    });
+  };
+
+  // Find vector pairs between assigned resources and their target incidents
+  const vectorPairs: Array<{ from: [number, number]; to: [number, number]; callSign: string; incidentId: string }> = [];
+  resources.forEach((res) => {
+    if (res.currentIncidentId && res.currentLocation && res.currentLocation.length === 2) {
+      const inc = incidents.find((i) => String(i._id) === String(res.currentIncidentId));
+      if (inc && inc.location?.coordinates) {
+        vectorPairs.push({
+          from: [res.currentLocation[1], res.currentLocation[0]],
+          to: [inc.location.coordinates[1], inc.location.coordinates[0]],
+          callSign: res.identifier,
+          incidentId: String(inc._id),
+        });
+      }
+    }
+  });
 
   return (
     <div className={`relative w-full ${height} rounded-lg overflow-hidden border border-slate-800 shadow-xl bg-slate-950`}>
@@ -102,13 +133,13 @@ export const LiveMap: React.FC<LiveMapProps> = ({
           </span>
         </div>
         <span className="text-[10px] font-mono text-slate-400 border-l border-slate-700 pl-2">
-          {incidents.length} Incidents | {resources.length} Units
+          {incidents.length} Incidents | {resources.length} Units | {vectorPairs.length} Dispatched Vectors
         </span>
       </div>
 
       {/* Layer Filters & Recenter Controls Overlay */}
-      <div className="absolute top-3 right-3 z-[400] flex items-center gap-2">
-        <div className="bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-lg border border-slate-800 shadow-lg flex items-center gap-2 text-xs">
+      <div className="absolute top-3 right-3 z-[400] flex flex-wrap items-center justify-end gap-2 max-w-[calc(100%-24px)]">
+        <div className="bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 shadow-xl flex flex-wrap items-center gap-2.5 text-xs font-mono">
           <label className="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100">
             <input
               type="checkbox"
@@ -128,11 +159,43 @@ export const LiveMap: React.FC<LiveMapProps> = ({
             />
             <span>Fleet Units</span>
           </label>
+          <span className="text-slate-700">|</span>
+          <label className="flex items-center gap-1.5 cursor-pointer text-amber-300 hover:text-amber-100">
+            <input
+              type="checkbox"
+              checked={showHeatmap}
+              onChange={(e) => setShowHeatmap(e.target.checked)}
+              className="rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-0 w-3.5 h-3.5"
+            />
+            <span>Density Heatmap</span>
+          </label>
+          <span className="text-slate-700">|</span>
+          <label className="flex items-center gap-1.5 cursor-pointer text-sky-300 hover:text-sky-100">
+            <input
+              type="checkbox"
+              checked={showVectors}
+              onChange={(e) => setShowVectors(e.target.checked)}
+              className="rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-0 w-3.5 h-3.5"
+            />
+            <span>Vectors</span>
+          </label>
         </div>
+
+        {showHeatmap && (
+          <select
+            value={aggregationWindow}
+            onChange={(e: any) => setAggregationWindow(e.target.value)}
+            className="bg-slate-900/95 backdrop-blur-md text-[11px] font-mono text-amber-300 border border-slate-800 rounded-xl px-2.5 py-1.5 focus:outline-none shadow-xl cursor-pointer"
+          >
+            <option value="24h">24h Heatmap</option>
+            <option value="7d">7d Heatmap</option>
+            <option value="all">All Active</option>
+          </select>
+        )}
 
         <button
           onClick={resetMap}
-          className="bg-slate-900/90 backdrop-blur-md p-2 rounded-lg border border-slate-800 text-slate-300 hover:text-slate-100 hover:bg-slate-800 shadow-lg transition-colors"
+          className="bg-slate-900/95 backdrop-blur-md p-2 rounded-xl border border-slate-800 text-slate-300 hover:text-slate-100 hover:bg-slate-800 shadow-xl transition-colors shrink-0"
           title="Recenter Metro Operations Map"
         >
           <Crosshair className="w-4 h-4" />
@@ -146,6 +209,43 @@ export const LiveMap: React.FC<LiveMapProps> = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {/* Heatmap Density Overlay Layer */}
+        {showHeatmap &&
+          getFilteredHeatmapIncidents().map((inc) => {
+            const coords: [number, number] = [inc.location.coordinates[1], inc.location.coordinates[0]];
+            const radius = inc.severity === 'CRITICAL' ? 600 : inc.severity === 'HIGH' ? 450 : 300;
+            const fillColor = inc.severity === 'CRITICAL' ? '#ef4444' : inc.severity === 'HIGH' ? '#f97316' : '#f59e0b';
+            return (
+              <Circle
+                key={`heat-${inc._id}`}
+                center={coords}
+                radius={radius}
+                pathOptions={{
+                  fillColor,
+                  fillOpacity: 0.3,
+                  stroke: true,
+                  color: fillColor,
+                  weight: 1.5,
+                }}
+              />
+            );
+          })}
+
+        {/* Dispatched Unit Vector Polylines */}
+        {showVectors &&
+          vectorPairs.map((pair, idx) => (
+            <Polyline
+              key={`vec-${idx}`}
+              positions={[pair.from, pair.to]}
+              pathOptions={{
+                color: '#38bdf8',
+                weight: 2,
+                dashArray: '6, 8',
+                opacity: 0.85,
+              }}
+            />
+          ))}
 
         {/* Incidents Markers */}
         {showIncidents &&

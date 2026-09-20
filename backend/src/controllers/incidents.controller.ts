@@ -6,6 +6,7 @@ import { Report } from '../models/Report.js';
 import { Sensor } from '../models/Sensor.js';
 import { IncidentUpdate, OperatorAction } from '../models/IncidentUpdate.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { scheduleSLAJob, cancelSLAJob } from '../services/slaWorker.js';
 import { io } from '../server.js';
 
 export const getIncidents = async (req: Request, res: Response, next: NextFunction) => {
@@ -154,6 +155,11 @@ export const performIncidentAction = async (req: Request, res: Response, next: N
 
     let summary = '';
 
+    // Guarantee detectionTimestamp
+    if (!incident.responseMetrics.detectionTimestamp) {
+      incident.responseMetrics.detectionTimestamp = incident.createdAt || new Date();
+    }
+
     switch (action as OperatorAction) {
       case 'ACKNOWLEDGE':
         summary = `${actorName} (${actorRole}) acknowledged incident ${incident.incidentNumber}.`;
@@ -177,10 +183,36 @@ export const performIncidentAction = async (req: Request, res: Response, next: N
 
         if (incident.status === 'ACTIVE' || incident.status === 'UNDER_REVIEW') {
           incident.status = 'ASSIGNED';
-          incident.responseMetrics.dispatchedTimestamp = new Date();
         }
 
+        // Timestamp Lifecycle: set dispatchedTimestamp & compute dispatchDelayMinutes
+        if (!incident.responseMetrics.dispatchedTimestamp) {
+          incident.responseMetrics.dispatchedTimestamp = new Date();
+          const detectTime = new Date(incident.responseMetrics.detectionTimestamp).getTime();
+          const dispatchTime = incident.responseMetrics.dispatchedTimestamp.getTime();
+          incident.responseMetrics.dispatchDelayMinutes = Math.max(0, Math.round((dispatchTime - detectTime) / 60000));
+        }
+
+        // SLA Job Cancellation upon valid confirmed resource assignment
+        await cancelSLAJob(String(incident._id));
+
         summary = `Assigned ${resource.name} (${resource.identifier}) to ${incident.incidentNumber}.`;
+
+        if (io) {
+          io.emit('resource.assigned', {
+            incidentId: incident._id.toString(),
+            resourceId: resource._id.toString(),
+            callSign: resource.identifier,
+            status: resource.status,
+            timestamp: new Date(),
+          });
+          io.emit('resource.updated', {
+            resourceId: resource._id.toString(),
+            callSign: resource.identifier,
+            status: resource.status,
+            timestamp: new Date(),
+          });
+        }
         break;
 
       case 'CHANGE_SEVERITY':
@@ -188,23 +220,67 @@ export const performIncidentAction = async (req: Request, res: Response, next: N
         const oldSev = incident.severity;
         incident.severity = newSeverity;
         summary = `Severity modified from ${oldSev} to ${newSeverity}. Reason: ${reason || 'Operator assessment'}`;
+
+        // SLA Job Reschedule check: If severity changed from P1 to non-P1, cancel SLA job. If P1 and unassigned, schedule.
+        if (newSeverity !== 'CRITICAL' && incident.priority !== 'P1') {
+          await cancelSLAJob(String(incident._id));
+        } else if ((newSeverity === 'CRITICAL' || incident.priority === 'P1') && incident.assignedResources.length === 0) {
+          await scheduleSLAJob(incident);
+        }
+
+        if (io) {
+          io.emit('incident.severity.updated', {
+            incidentId: incident._id.toString(),
+            incidentNumber: incident.incidentNumber,
+            previousSeverity: oldSev,
+            newSeverity: newSeverity,
+            reason: reason || 'Operator assessment',
+            timestamp: new Date(),
+          });
+        }
         break;
 
       case 'ESCALATE':
         incident.status = 'ESCALATED';
         incident.escalationReason = reason || 'Response delay threshold exceeded';
         summary = `Incident escalated to supervisor queue. Reason: ${reason || 'Urgent coordination required'}`;
+
+        if (io) {
+          io.emit('incident.status.updated', {
+            incidentId: incident._id.toString(),
+            incidentNumber: incident.incidentNumber,
+            status: 'ESCALATED',
+            escalationReason: incident.escalationReason,
+            timestamp: new Date(),
+          });
+        }
         break;
 
       case 'RESOLVE':
         incident.status = 'RESOLVED';
         incident.responseMetrics.resolvedTimestamp = new Date();
+        const detectTime = new Date(incident.responseMetrics.detectionTimestamp).getTime();
+        const resolveTime = incident.responseMetrics.resolvedTimestamp.getTime();
+        incident.responseMetrics.totalResponseMinutes = Math.max(0, Math.round((resolveTime - detectTime) / 60000));
+
+        // SLA Job Cancellation upon resolution
+        await cancelSLAJob(String(incident._id));
+
         summary = `Incident marked RESOLVED by ${actorName}.`;
         // Release assigned resources to AVAILABLE
         await Resource.updateMany(
           { _id: { $in: incident.assignedResources } },
           { $set: { status: 'AVAILABLE', currentIncidentId: null } }
         );
+
+        if (io) {
+          io.emit('incident.status.updated', {
+            incidentId: incident._id.toString(),
+            incidentNumber: incident.incidentNumber,
+            status: 'RESOLVED',
+            timestamp: new Date(),
+          });
+        }
         break;
 
       case 'FIELD_NOTE':
@@ -215,6 +291,20 @@ export const performIncidentAction = async (req: Request, res: Response, next: N
         if (newStatus) {
           incident.status = newStatus;
           summary = `Status transitioned to ${newStatus}.`;
+          if (newStatus === 'ON_SCENE' && !incident.responseMetrics.arrivedTimestamp) {
+            incident.responseMetrics.arrivedTimestamp = new Date();
+          }
+          if (['RESOLVED', 'MERGED', 'CANCELLED'].includes(newStatus)) {
+            await cancelSLAJob(String(incident._id));
+          }
+          if (io) {
+            io.emit('incident.status.updated', {
+              incidentId: incident._id.toString(),
+              incidentNumber: incident.incidentNumber,
+              status: newStatus,
+              timestamp: new Date(),
+            });
+          }
         } else {
           throw new AppError(`Unknown action: ${action}`, 400, 'INVALID_ACTION');
         }

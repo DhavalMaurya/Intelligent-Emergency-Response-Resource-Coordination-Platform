@@ -33,37 +33,37 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between z-30 sticky top-0">
+    <header className="h-16 bg-slate-900/95 border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-md">
       {/* Brand & System Operational Indicator */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+        <div className="flex items-center gap-2.5 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center font-bold text-white shadow-md shadow-rose-950">
             <Shield className="w-5 h-5" />
           </div>
-          <div>
-            <h1 className="text-sm font-extrabold tracking-wider text-slate-100 font-display">
+          <div className="hidden xs:block">
+            <h1 className="text-sm font-extrabold tracking-wider text-slate-100 font-display truncate">
               SENTINEL EOC
             </h1>
-            <p className="text-[10px] text-slate-400 font-mono tracking-wider">SMART EMERGENCY NETWORK & TRIAGE INGESTION LAYER</p>
+            <p className="text-[9px] sm:text-[10px] text-slate-400 font-mono tracking-wider truncate">SMART EMERGENCY TRIAGE ENGINE</p>
           </div>
         </div>
 
-        <div className="h-6 w-px bg-slate-800 mx-1" />
+        <div className="hidden sm:block h-6 w-px bg-slate-800 mx-1 shrink-0" />
 
         {/* Civil EOC Operational Status Badge */}
-        <div className="flex items-center gap-2 bg-slate-950 px-3 py-1 rounded-md border border-slate-800">
+        <div className="flex items-center gap-2 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800 shrink-0">
           <span className="relative flex h-2.5 w-2.5">
             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${connected ? 'bg-emerald-400' : 'bg-amber-400'}`} />
             <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${connected ? 'bg-emerald-500' : 'bg-amber-500'}`} />
           </span>
-          <span className="text-xs font-semibold tracking-wider font-mono text-slate-200">
-            SYSTEM STATUS: {connected ? 'OPERATIONAL' : 'OFFLINE / RECONNECTING'}
+          <span className="text-[11px] sm:text-xs font-semibold tracking-wider font-mono text-slate-200">
+            <span className="hidden sm:inline">SYSTEM STATUS: </span>{connected ? 'OPERATIONAL' : 'OFFLINE'}
           </span>
         </div>
       </div>
 
       {/* Clock, Health shortcut, Actions, User Profile */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
         {/* Public Citizen Portal Quick Link */}
         <Link
           to="/report-emergency"
@@ -79,15 +79,16 @@ export const Header: React.FC<HeaderProps> = ({
         {onOpenCreateModal && (
           <button
             onClick={onOpenCreateModal}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-950/40 transition-colors"
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-950/40 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            <span>Log Emergency Call</span>
+            <span className="hidden sm:inline">Log Emergency Call</span>
+            <span className="sm:hidden">Log Call</span>
           </button>
         )}
 
         {/* Real-Time Operational Clock */}
-        <div className="hidden lg:flex items-center gap-3 bg-slate-950/80 px-3.5 py-1.5 rounded-lg border border-slate-800 text-xs font-mono">
+        <div className="hidden xl:flex items-center gap-3 bg-slate-950/80 px-3.5 py-1.5 rounded-lg border border-slate-800 text-xs font-mono">
           <Clock className="w-3.5 h-3.5 text-slate-400" />
           <div className="text-right">
             <span className="text-slate-200 font-bold">{formatLocal(time)} LOCAL</span>
@@ -109,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Alerts Bell Badge */}
         <div className="relative">
-          <button className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors relative">
+          <button className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors relative" title="View Urgent Alerts">
             <Bell className="w-4 h-4" />
             {unreadAlertsCount > 0 && (
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center animate-pulse">
@@ -122,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* User Role Card & Logout */}
         {user && (
           <div className="flex items-center gap-3 pl-2 border-l border-slate-800">
-            <div className="text-right">
+            <div className="text-right hidden md:block">
               <div className="text-xs font-bold text-slate-200">{user.name}</div>
               <div className="text-[10px] font-mono text-rose-400 uppercase tracking-wider">{user.role}</div>
             </div>

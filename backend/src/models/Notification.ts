@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export type NotificationLevel = 'INFO' | 'WARNING' | 'CRITICAL';
-export type NotificationType = 'DELAY_BREACH' | 'RESOURCE_SHORTAGE' | 'ESCALATION' | 'HAZARD_ALERT' | 'SYSTEM_ALERT';
+export type NotificationType = 'DELAY_BREACH' | 'RESOURCE_SHORTAGE' | 'ESCALATION' | 'HAZARD_ALERT' | 'SENSOR_ALERT' | 'SYSTEM_ALERT';
 
 export interface INotification extends Document {
   recipientRole?: string;
@@ -35,7 +35,7 @@ const NotificationSchema = new Schema<INotification>(
     },
     type: {
       type: String,
-      enum: ['DELAY_BREACH', 'RESOURCE_SHORTAGE', 'ESCALATION', 'HAZARD_ALERT', 'SYSTEM_ALERT'],
+      enum: ['DELAY_BREACH', 'RESOURCE_SHORTAGE', 'ESCALATION', 'HAZARD_ALERT', 'SENSOR_ALERT', 'SYSTEM_ALERT'],
       default: 'SYSTEM_ALERT',
       required: true,
       index: true,
