@@ -115,13 +115,15 @@ desktop.ini
 !.vscode/settings.json
 
 # ------------------------------------------------------------------------------
-# 9. Presentation Decks & Video Scripts
+# 9. Presentation Decks, Video Scripts & Project Plans
 # ------------------------------------------------------------------------------
 *.pptx
 *.ppt
 *.key
 pptContent.md
 demo_video_script.md
+PS9_5_Updated_5_Phase_Project_Plan.md
+*Project_Plan.md
 
 # ------------------------------------------------------------------------------
 # 10. IDE & Subagent Local Artifacts
