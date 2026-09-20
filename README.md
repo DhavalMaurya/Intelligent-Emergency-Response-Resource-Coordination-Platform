@@ -22,14 +22,6 @@ By pairing **deterministic mathematical triage engines** with **Google Gemini 3.
 
 ---
 
-## 📄 Submission Artifacts & Deck Links
-
-* **Presentation Deck Content (8 Guidelines):** [`pptContent.md`](pptContent.md)
-* **Demo Video Recording Walkthrough & Script:** [`demo_video_script.md`](demo_video_script.md)
-* **Project Repository:** [GitHub - DhavalMaurya/Intelligent-Emergency-Response-Resource-Coordination-Platform](https://github.com/DhavalMaurya/Intelligent-Emergency-Response-Resource-Coordination-Platform)
-
----
-
 ## 📸 Application Interface & System Walkthrough
 
 ### 1. Command Center Dashboard

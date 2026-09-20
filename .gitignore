@@ -115,11 +115,13 @@ desktop.ini
 !.vscode/settings.json
 
 # ------------------------------------------------------------------------------
-# 9. Presentation Binaries & Exported Decks
+# 9. Presentation Decks & Video Scripts
 # ------------------------------------------------------------------------------
 *.pptx
 *.ppt
 *.key
+pptContent.md
+demo_video_script.md
 
 # ------------------------------------------------------------------------------
 # 10. IDE & Subagent Local Artifacts
