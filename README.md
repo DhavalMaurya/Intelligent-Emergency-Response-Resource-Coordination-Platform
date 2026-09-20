@@ -20,37 +20,35 @@
 
 By pairing **deterministic mathematical triage engines** with **Google Gemini 3.6 Flash AI intelligence**, SENTINEL prevents emergency data fragmentation, automates duplicate incident detection, optimizes emergency resource dispatches, and provides dynamic hospital capacity advisories while ensuring human dispatchers retain 100% operational command authority.
 
----
-
 ## 📸 Application Interface & System Walkthrough
 
 ### 1. Command Center Dashboard
-Central EOC command overview showing live active incidents, priority breakdown, response time metrics, and system diagnostics.
+Central EOC command overview featuring live active incident counters, KPI cards, real-time live map overlay, and AI Situation Synthesis Briefing.
 ![Command Center Dashboard](screenshots/01_command_center.png)
 
-### 2. Incident & Emergency Intake Management
-Operator call intake panel with real-time AI severity scoring, hazard detection, and duplicate report auto-linking.
-![Incident Intake](screenshots/02_incidents_management.png)
+### 2. Rapid 911 Emergency Call Intake
+Streamlined 911 operator call intake modal with real-time casualty counts, hazard risk modifiers, and live 0–100 severity preview calculation.
+![Rapid 911 Intake Modal](screenshots/02_rapid_intake_modal.png)
 
-### 3. Hospital Capacity & Trauma Advisory System
-Live bed and ICU management matrix with $U_{\text{net\_avail}}$ Net Capacity calculations and automatic shortage warning alerts.
-![Hospitals Advisory](screenshots/03_hospitals_advisory.png)
+### 3. Incident Management & Investigation Registry
+Centralized civil emergency record database displaying active dispatches, severity levels, unit counts, and inspection actions.
+![Incident Registry](screenshots/03_incidents_registry.png)
 
-### 4. Live Operations Map & Geospatial Tracking
-Interactive Leaflet GIS map with spatial indexing, turn-by-turn paramedic dispatch, and sub-200ms WebSocket updates.
-![Live Map Operations](screenshots/04_live_map.png)
+### 4. Hospital Network & Trauma Capacity Center
+Real-time ER bed availability, ICU capacity matrix, divert status indicators, and EMS nearest hospital routing advisor.
+![Hospitals Advisory](screenshots/04_hospitals_advisory.png)
 
-### 5. Analytics & Incident Heatmaps
-Historical response trends, sector incident density heatmaps, and resource utilization charts.
-![Analytics Dashboard](screenshots/05_analytics_dashboard.png)
+### 5. Live Operations GIS Map
+Interactive Leaflet GIS operations grid displaying active incident locations, paramedic fleet units, vector lines, and density heatmaps.
+![Live Operations Map](screenshots/05_live_operations_map.png)
 
-### 6. AI Command Assistant
-Grounded NLP assistant strictly queryable against active database records with anti-prompt-injection boundary safeguards.
-![AI Assistant](screenshots/06_ai_assistant.png)
+### 6. Operational Analytics & Predictive Deficit Forecast
+Executive SLA compliance tracking, AI operational intelligence briefings, and 60-minute predictive deficit forecasting based on $U_{\text{net\_avail}}$.
+![Operational Analytics](screenshots/06_operational_analytics.png)
 
-### 7. EOC System Diagnostics & Health Modal
-Real-time diagnostic panel displaying database connection health, socket latency, and 60-second LRU circuit breaker fallback status.
-![System Diagnostics](screenshots/07_system_diagnostics.png)
+### 7. Mission-Critical Analytics & Trend Visualizers
+Interactive data visualizers including hourly incident volume vs resolution progression, severity distribution donut charts, and incident volume by category.
+![Analytics Trend Visualizers](screenshots/07_analytics_charts.png)
 
 ---
 
